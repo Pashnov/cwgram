@@ -2,9 +2,6 @@ package com.apashnov.cwgram.client;
 
 import org.telegram.bot.structure.BotConfig;
 
-/**
- * Created by apashnov on 15.05.2017.
- */
 public class ClientConfig extends BotConfig {
 
     private String phoneNumber;

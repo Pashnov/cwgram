@@ -19,9 +19,9 @@ import java.util.Scanner;
 @SpringBootApplication
 public class TelegramClientCwApplication {
 
-    private static final int APIKEY = 1;// your api key
-    private static final String APIHASH = "9f1123121235f1d7213123318bdc23eb531231cda23d13242cd741"; // your api hash
-    private static final String PHONENUMBER = "38012368481236"; // Your phone number
+    private static final int APIKEY = ;// your api key
+    private static final String APIHASH = ""; // your api hash
+    private static final String PHONENUMBER = ""; // Your phone number
 
     public static void main(String[] args) throws Exception {
         ConfigurableApplicationContext app = SpringApplication.run(TelegramClientCwApplication.class, args);
