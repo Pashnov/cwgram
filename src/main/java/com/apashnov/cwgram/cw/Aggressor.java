@@ -9,4 +9,8 @@ public class Aggressor extends Warrior {
     public Aggressor(String sessionId) {
         super(sessionId);
     }
+
+    @Override public WarriorKind getKind() {
+        return WarriorKind.AGGRESSOR;
+    }
 }
