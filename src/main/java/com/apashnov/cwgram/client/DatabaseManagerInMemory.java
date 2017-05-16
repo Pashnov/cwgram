@@ -23,13 +23,19 @@ public class DatabaseManagerInMemory implements DatabaseManager {
     /**
      * Private constructor (due to Singleton)
      */
-    public DatabaseManagerInMemory() {
+    private DatabaseManagerInMemory() {
 //        connetion = new ConnectionDB();
 //        final int currentVersion = connetion.checkVersion();
 //        BotLogger.info(LOGTAG, "Current db version: " + currentVersion);
 //        if (currentVersion < CreationStrings.version) {
 //            recreateTable(currentVersion);
 //        }
+    }
+
+    private static final DatabaseManagerInMemory instance = new DatabaseManagerInMemory();
+
+    public static DatabaseManagerInMemory getInstance(){
+        return instance;
     }
 
     /**
