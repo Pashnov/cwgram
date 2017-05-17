@@ -58,7 +58,7 @@ import static com.apashnov.cwgram.Constants.*;
 @SpringBootApplication
 public class TelegramClientCwApplication {
 
-
+    public static final long GROUP_RED_ALERT_LEGION = 1112569524;
 
     public static void main(String[] args) throws Exception {
         ConfigurableApplicationContext app = SpringApplication.run(TelegramClientCwApplication.class, args);
