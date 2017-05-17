@@ -38,12 +38,12 @@ import org.telegram.tl.TLVector;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Scanner;
 
+import static com.apashnov.cwgram.Constants.*;
+
 @SpringBootApplication
 public class TelegramClientCwApplication {
 
-    private static final int APIKEY = ;// your api key
-    private static final String APIHASH = ""; // your api hash
-    private static final String PHONENUMBER = ""; // Your phone number
+
 
     public static void main(String[] args) throws Exception {
         ConfigurableApplicationContext app = SpringApplication.run(TelegramClientCwApplication.class, args);
@@ -53,7 +53,7 @@ public class TelegramClientCwApplication {
         MessageHandler msgHandler = new MessageHandler();
         ChatUpdatesBuilderImpl chatUpdatesBuilder = new ChatUpdatesBuilderImpl(db, msgHandler, new UsersHandler(), new ChatsHandler(), new TLMessageHandler(msgHandler, db));
 
-        ClientConfig config = new ClientConfig(PHONENUMBER);
+        ClientConfig config = new ClientConfig(Constants.PHONENUMBER);
 
         final TelegramBot kernel = new TelegramBot(config, chatUpdatesBuilder, APIKEY, APIHASH);
         LoginStatus status = kernel.init();
