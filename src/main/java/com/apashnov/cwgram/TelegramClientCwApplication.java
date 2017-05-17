@@ -8,6 +8,8 @@ import com.apashnov.cwgram.client.handler.MessageHandler;
 import com.apashnov.cwgram.client.handler.TLMessageHandler;
 import com.apashnov.cwgram.client.handler.UsersHandler;
 import com.apashnov.cwgram.client.model.tl.TLRequestMessagesGetCommonChats;
+import com.apashnov.cwgram.client.model.tl.TLRequestMessagesGetDialogsNew;
+import com.apashnov.cwgram.client.model.tl.TLRequestMessagesGetHistoryNew;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -16,6 +18,7 @@ import org.telegram.api.account.TLAccountDaysTTL;
 import org.telegram.api.channel.TLChannelParticipant;
 import org.telegram.api.contacts.TLAbsContacts;
 import org.telegram.api.engine.RpcException;
+import org.telegram.api.engine.TelegramApi;
 import org.telegram.api.engine.TimeoutException;
 import org.telegram.api.functions.account.TLRequestAccountGetAccountTTL;
 import org.telegram.api.functions.account.TLRequestAccountGetAuthorizations;
@@ -24,18 +27,30 @@ import org.telegram.api.functions.contacts.TLRequestContactsGetContacts;
 import org.telegram.api.functions.contacts.TLRequestContactsImportContacts;
 import org.telegram.api.functions.messages.TLRequestMessagesGetChats;
 import org.telegram.api.functions.messages.TLRequestMessagesGetDialogs;
+import org.telegram.api.functions.messages.TLRequestMessagesGetHistory;
+import org.telegram.api.functions.messages.TLRequestMessagesGetMessages;
 import org.telegram.api.functions.users.TLRequestUsersGetUsers;
+import org.telegram.api.input.peer.TLInputPeerEmpty;
+import org.telegram.api.input.peer.TLInputPeerSelf;
+import org.telegram.api.input.peer.TLInputPeerUser;
 import org.telegram.api.input.user.TLInputUser;
+import org.telegram.api.message.TLAbsMessage;
+import org.telegram.api.message.TLMessage;
+import org.telegram.api.messages.TLAbsMessages;
 import org.telegram.api.messages.TLMessagesChats;
 import org.telegram.api.messages.dialogs.TLAbsDialogs;
+import org.telegram.api.messages.dialogs.TLDialogs;
 import org.telegram.api.user.TLAbsUser;
+import org.telegram.api.user.TLUser;
 import org.telegram.bot.TelegramFunctionCallback;
 import org.telegram.bot.kernel.TelegramBot;
 import org.telegram.bot.structure.LoginStatus;
 import org.telegram.tl.TLIntVector;
 import org.telegram.tl.TLVector;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Scanner;
 
 import static com.apashnov.cwgram.Constants.*;
@@ -56,6 +71,7 @@ public class TelegramClientCwApplication {
         ClientConfig config = new ClientConfig(Constants.PHONENUMBER);
 
         final TelegramBot kernel = new TelegramBot(config, chatUpdatesBuilder, APIKEY, APIHASH);
+
         LoginStatus status = kernel.init();
         if (status == LoginStatus.CODESENT) {
             Scanner in = new Scanner(System.in);
@@ -65,7 +81,7 @@ public class TelegramClientCwApplication {
             }
         }
         if (status == LoginStatus.ALREADYLOGGED) {
-            kernel.startBot();
+//            kernel.startBot();
 //            kernel.getKernelComm().getApi().doRpcCallWeak();
 //            GzipRequest
 
@@ -131,7 +147,54 @@ public class TelegramClientCwApplication {
 //                    System.out.println(e);
 //                }
 //            });
+            TelegramApi telegramApi = kernel.getKernelComm().getApi();
+//            TLRequestMessagesGetDialogs dialogs = new TLRequestMessagesGetDialogs();
+//            dialogs.setOffsetPeer(new TLInputPeerEmpty());
+//            TLAbsDialogs tlAbsDialogs = telegramApi.doRpcCall(dialogs);
+
+            TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 100);
+            TLDialogs tlDialogs = telegramApi.doRpcCall(dialogsNew);
+//            ((List<TLUser>)(List<?>) tlDialogs.getUsers()).stream().filter((TLUser c) -> c.getUserName().equals("ChatWarsBot"));
+
+            (tlDialogs.getUsers()).stream().filter((TLAbsUser c) -> ((TLUser) c).getUserName().equals("ChatWarsBot"))
+                    .findFirst().map(c -> ((TLUser) c)).ifPresent(TelegramClientCwApplication::setChatWarsBot);
+
+            new Thread(new Runnable() {
+                int index = 0;
+
+                @Override
+                public void run() {
+
+                    try {
+                        while (index < 1000) {
+                            Thread.sleep(1000);
+//                            TLRequestMessagesGetMessages msgs= new TLRequestMessagesGetMessages();
+//                            TLIntVector ids = new TLIntVector();
+////                            ids.add(id);
+//                            msgs.setId(ids);
+//                            TLAbsMessages tlAbsMessages = telegramApi.doRpcCall(msgs);
+//                            System.out.println("index = " + index++ + ". size = " + tlAbsMessages.getMessages().size());
+
+                            TLInputPeerUser peer = new TLInputPeerUser();
+                            peer.setUserId(chatWarsBot.getId());
+                            peer.setAccessHash(chatWarsBot.getAccessHash());
+                            TLRequestMessagesGetHistoryNew history = new TLRequestMessagesGetHistoryNew(peer, 0, -1, 10);
+                            TLAbsMessages tlAbsMessages = telegramApi.doRpcCall(history);
+
+
+                            System.out.println(tlAbsMessages);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }).start();
+
             System.out.println("debug point");
+
+
+
 
         } else {
             throw new Exception("Failed to log in: " + status);
@@ -139,5 +202,11 @@ public class TelegramClientCwApplication {
 
         app.close();
 
+    }
+
+    static TLUser chatWarsBot = null;
+
+    public static void setChatWarsBot(TLUser chatWarsBot) {
+        TelegramClientCwApplication.chatWarsBot = chatWarsBot;
     }
 }
