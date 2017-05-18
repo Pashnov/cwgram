@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,12 @@ public class CwGramConfig {
     @Value("${base.path}")
     String basePath;
 
+    @Value("${cw.gram.api.key}")
+    int apiKey;
+
+    @Value("${cw.gram.api.hash}")
+    String apiHash;
+
     @Bean
     public List<Container> containers() throws IOException {
         System.out.println(isDef);
@@ -41,7 +48,11 @@ public class CwGramConfig {
         List<Container> containers = Files.list(Paths.get(basePath))
                 .filter(path -> Files.isDirectory(path))
                 .map(path -> new Container(path))
+                .peek(container -> container.activate(apiKey, apiHash))
                 .collect(Collectors.toList());
+
+        containers.sort(Comparator.comparing(Container::getId));
+
 
         return containers;
     }

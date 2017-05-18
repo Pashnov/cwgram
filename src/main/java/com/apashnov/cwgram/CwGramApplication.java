@@ -168,7 +168,6 @@ public class CwGramApplication {
 //            throw new Exception("Failed to log in: " + status);
 //        }
 //
-//        app.close();
 
     }
 
