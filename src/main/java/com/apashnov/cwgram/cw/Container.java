@@ -11,13 +11,10 @@ import org.jetbrains.annotations.NotNull;
 import org.telegram.bot.kernel.TelegramBot;
 import org.telegram.bot.structure.LoginStatus;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
-import java.util.Scanner;
 
-
-/**
- * Created by apashnov on 18.05.2017.
- */
 public class Container implements Comparable<Container> {
 
     private int id;
@@ -52,22 +49,38 @@ public class Container implements Comparable<Container> {
             if (status == LoginStatus.CODESENT) {
                 System.out.println("type code for -> " + phoneNumber);
                 System.out.println("and click enter");
-                try (Scanner in = new Scanner(System.in)) {
-                    //todo:: improve input, failed for the second client
-                    boolean success = kernel.getKernelAuth().setAuthCode(in.nextLine().trim());
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
+                    String code = br.readLine().trim();
+                    while (!isMatch(code)) {
+                        System.out.println("type code again for -> " + phoneNumber);
+                        code = br.readLine().trim();
+                    }
+                    boolean success = kernel.getKernelAuth().setAuthCode(code);
                     if (success) {
                         status = LoginStatus.ALREADYLOGGED;
                     }
                 }
             }
             if (status == LoginStatus.ALREADYLOGGED) {
-
+                System.out.println(phoneNumber + "(" + name + ") logged in successfully");
             } else {
-                throw new RuntimeException("Failed to log in: " + status);
+                throw new RuntimeException("Failed to log in: " + status + ", for  -> " + phoneNumber);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean isMatch(String code) {
+        if (code != null && code.length() == 5) {
+            for (int i = 0; i < code.length(); i++) {
+                if (!Character.isDigit(code.charAt(i))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     public int getId() {
