@@ -13,9 +13,9 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Created by apashnov on 15.05.2017.
  */
-public class ChatUpdatesBuilderImpl implements ChatUpdatesBuilder {
+public class ChatUpdatesBuilderImpl {
 
-    private IKernelComm kernelComm;
+    private KernelCommNew kernelComm;
     private IDifferenceParametersService differenceParametersService;
     private DatabaseManager databaseManager;
     private MessageHandler messageHandler;
@@ -31,7 +31,7 @@ public class ChatUpdatesBuilderImpl implements ChatUpdatesBuilder {
         this.tlMessageHandler = tlMessageHandler;
     }
 
-    @Override
+
     public UpdatesHandlerBase build() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         if (kernelComm == null) {
             throw new NullPointerException("Can't build the handler without a KernelComm");
@@ -44,23 +44,20 @@ public class ChatUpdatesBuilderImpl implements ChatUpdatesBuilder {
 //        final Constructor<CustomUpdatesHandler> constructor = updatesHandlerBase.getConstructor(IKernelComm.class, IDifferenceParametersService.class, DatabaseManager.class);
 //        final CustomUpdatesHandler updatesHandler =
 //                constructor.newInstance(kernelComm, differenceParametersService, getDatabaseManager());
-        CustomUpdatesHandler updatesHandler = new CustomUpdatesHandler(kernelComm, differenceParametersService, getDatabaseManager());
+//        CustomUpdatesHandler updatesHandler = new CustomUpdatesHandler(kernelComm, differenceParametersService, getDatabaseManager());
 //        updatesHandler.setConfig(botConfig);
-        updatesHandler.setHandlers(messageHandler, usersHandler, chatsHandler, tlMessageHandler);
-        return updatesHandler;
+//        updatesHandler.setHandlers(messageHandler, usersHandler, chatsHandler, tlMessageHandler);
+        return null;
     }
 
-    @Override
-    public void setKernelComm(IKernelComm kernelComm) {
+    public void setKernelComm(KernelCommNew kernelComm) {
         this.kernelComm = kernelComm;
     }
 
-    @Override
     public void setDifferenceParametersService(IDifferenceParametersService differenceParametersService) {
         this.differenceParametersService = differenceParametersService;
     }
 
-    @Override
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
     }

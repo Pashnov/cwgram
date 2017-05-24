@@ -21,12 +21,12 @@ public class TLMessageHandler {
     }
 
     public void onTLMessage(TLMessage message) {
-        final TLAbsPeer absPeer = message.getToId();
-        if (absPeer instanceof TLPeerUser) {
-            onTLMessageForUser(message);
-        } else {
-            BotLogger.severe(LOGTAG, "Unsupported Peer: " + absPeer.toString());
-        }
+//        final TLAbsPeer absPeer = message.getToId();
+//        if (absPeer instanceof TLPeerUser) {
+//            onTLMessageForUser(message);
+//        } else {
+//            BotLogger.severe(LOGTAG, "Unsupported Peer: " + absPeer.toString());
+//        }
     }
 
     private void onTLMessageForUser(TLMessage message) {

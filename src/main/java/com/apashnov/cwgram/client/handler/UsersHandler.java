@@ -15,11 +15,11 @@ public class UsersHandler implements IUsersHandler {
 
     @Override
     public void onUsers(List<TLAbsUser> users) {
-        if ((this.temporalUsers.size() + users.size()) > 4000) {
-            this.temporalUsers.clear();
-        }
-        users.stream().forEach(x -> this.temporalUsers.put(x.getId(), x));
+//        if ((this.temporalUsers.size() + users.size()) > 4000) {
+//            this.temporalUsers.clear();
+//        }
+//        users.stream().forEach(x -> this.temporalUsers.put(x.getId(), x));
 //        users.forEach();
-        System.out.println("debug UsersHandler");
+//        System.out.println("debug UsersHandler");
     }
 }

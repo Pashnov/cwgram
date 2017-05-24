@@ -1,15 +1,21 @@
 package com.apashnov.cwgram.cw;
 
-/**
- * Created by we on 14.05.2017.
- */
-public abstract class Warrior {
+import java.util.Properties;
 
-    public final String sessionId;
+public class Warrior {
 
-    public Warrior(String sessionId) {
-        this.sessionId = sessionId;
+    public static final String KEY_CW_DEFENDER = "cw.defender";
+
+    private WarriorKind kind = WarriorKind.DEFENDER;
+
+    public Warrior(Properties properties){
+        if(properties.getProperty(KEY_CW_DEFENDER).equals("false")){
+            kind = WarriorKind.AGGRESSOR;
+        }
     }
 
-    public abstract WarriorKind getKind();
+    public WarriorKind getKind(){
+        return kind;
+    }
+
 }

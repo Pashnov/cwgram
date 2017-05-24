@@ -12,6 +12,7 @@ import com.apashnov.cwgram.client.model.tl.TLRequestMessagesGetHistoryNew;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.api.engine.TelegramApi;
 import org.telegram.api.input.peer.TLInputPeerUser;
 import org.telegram.api.messages.TLAbsMessages;
@@ -26,6 +27,7 @@ import java.util.Scanner;
 import static com.apashnov.cwgram.Constants.*;
 
 @SpringBootApplication
+//@EnableScheduling
 public class CwGramApplication {
 
     public static void main(String[] args) throws Exception {

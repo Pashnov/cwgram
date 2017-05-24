@@ -18,6 +18,11 @@ public class User implements IUser {
         this.userHash = copy.getUserHash();
     }
 
+    public User(int userId, Long userHash) {
+        this.userId = userId;
+        this.userHash = userHash;
+    }
+
     @Override
     public int getUserId() {
         return this.userId;

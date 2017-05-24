@@ -1,5 +1,6 @@
 package com.apashnov.cwgram.client.handler;
 
+import com.apashnov.cwgram.client.KernelCommNew;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.api.engine.RpcException;
 import org.telegram.api.message.TLMessage;
@@ -10,12 +11,12 @@ import org.telegram.bot.structure.IUser;
 
 public class MessageHandler {
     private static final String LOGTAG = "MESSAGEHANDLER";
-    private IKernelComm kernelComm;
+    private KernelCommNew kernelComm;
 
     public MessageHandler() {
     }
 
-    public void setKernelComm(IKernelComm kernelComm) {
+    public void setKernelComm(KernelCommNew kernelComm) {
         this.kernelComm = kernelComm;
     }
 
@@ -26,11 +27,11 @@ public class MessageHandler {
      * @param message TLMessage received
      */
     public void handleMessage(@NotNull IUser user, @NotNull TLMessage message) {
-        try {
-            handleMessageInternal(user, message.getMessage());
-        } catch (RpcException e) {
-            BotLogger.severe(LOGTAG, e);
-        }
+//        try {
+//            handleMessageInternal(user, message.getMessage());
+//        } catch (RpcException e) {
+//            BotLogger.severe(LOGTAG, e);
+//        }
     }
 
     /**
@@ -40,11 +41,11 @@ public class MessageHandler {
      * @param message Message received
      */
     public void handleMessage(@NotNull IUser user, @NotNull TLUpdateShortMessage message) {
-        try {
-            handleMessageInternal(user, message.getMessage());
-        } catch (RpcException e) {
-            BotLogger.severe(LOGTAG, e);
-        }
+//        try {
+//            handleMessageInternal(user, message.getMessage());
+//        } catch (RpcException e) {
+//            BotLogger.severe(LOGTAG, e);
+//        }
     }
 
     /**

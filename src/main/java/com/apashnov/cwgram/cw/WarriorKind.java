@@ -5,5 +5,5 @@ package com.apashnov.cwgram.cw;
  */
 public enum WarriorKind {
 
-    AGGRESSOR, DEFENDER, EARNER
+    AGGRESSOR, DEFENDER
 }
