@@ -47,6 +47,7 @@ public class GetterFlagHandler implements CwHandler {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                System.out.println(uniqueName + "started");
                 TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 100);
                 TLDialogs tlDialogs = null;
                 try {
@@ -62,18 +63,25 @@ public class GetterFlagHandler implements CwHandler {
                 while (true) {
                     try {
                         waitUntilWaked(notifier, condition);
+                        System.out.println(uniqueName + " waked to get flag");
 
                         goToMainMenuThanRedDefThanGoingAttack(kernelComm, chatWarsBot);
                         String currentFlag = CwConstants.BTN_RED_FLAG;
                         while (notRegimeNoise()) {
 //                        while (true) {
+                            System.out.println(uniqueName+"currentFlag -> " + currentFlag);
+                            System.out.println(uniqueName+"going to solve flag");
                             findCommandsAndSolve(kernelComm);
-
+                            System.out.println(uniqueName+"solved flag");
                             String flag;
                             if (WarriorKind.AGGRESSOR == warrior.getKind()) {
-                                flag = flagStorage.getAttack();
+                                System.out.println(uniqueName+" going to get atk flag");
+                                flag = atcFlag;
+                                System.out.println(uniqueName+" got atk flag -> " + flag);
                             } else {
-                                flag = flagStorage.getDefend();
+                                System.out.println(uniqueName+" going to get def flag");
+                                flag = defFlag;
+                                System.out.println(uniqueName+" got def flag -> " + flag);
                             }
                             if (flag == null || flag == currentFlag) {
                                 try {
@@ -84,9 +92,10 @@ public class GetterFlagHandler implements CwHandler {
                                 }
                             } else {
                                 currentFlag = flag;
+                                System.out.println(uniqueName+ "going to send flag -> " + currentFlag);
                                 sendFlagThanGoingAttack(currentFlag, kernelComm, chatWarsBot);
                                 try {
-                                    Thread.sleep(3075);
+                                    Thread.sleep(2075);
                                     continue;
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
@@ -102,6 +111,8 @@ public class GetterFlagHandler implements CwHandler {
         }).start();
     }
 
+    private String atcFlag;
+    private String defFlag;
 
     private void findCommandsAndSolve(KernelCommNew kernelComm) throws Exception {
         TLInputPeerChannel peer = new TLInputPeerChannel();
@@ -113,7 +124,6 @@ public class GetterFlagHandler implements CwHandler {
             boolean atc = true;
             boolean def = true;
             boolean full = true;
-
             for (TLAbsMessage tlAbsMessage : tlAbsMessages.getMessages()) {
                 if (tlAbsMessage instanceof TLMessage) {
                     TLMessage message = (TLMessage) tlAbsMessage;
@@ -159,6 +169,8 @@ public class GetterFlagHandler implements CwHandler {
     private void solveFull(String text) {
         System.out.println("solveFull#text -> " + text);
         String flag = solve(text);
+        atcFlag = flag;
+        defFlag = flag;
         flagStorage.setAttack(flag);
         flagStorage.setDefend(flag);
     }
@@ -166,12 +178,14 @@ public class GetterFlagHandler implements CwHandler {
     private void solveDef(String text) {
         System.out.println("solveDef#text -> " + text);
         String flag = solve(text);
+        defFlag = flag;
         flagStorage.setDefend(flag);
     }
 
     private void solveAtc(String text) {
         System.out.println("solveAtc#text -> " + text);
         String flag = solve(text);
+        atcFlag = flag;
         flagStorage.setAttack(flag);
     }
 
@@ -223,7 +237,6 @@ public class GetterFlagHandler implements CwHandler {
 //        kernelComm.sendMessage(user, message);
 //        kernelComm.performMarkAsRead(user, 0);
     }
-
     @Autowired
     public void setNotifier(Notifier notifier) {
         this.notifier = notifier.getLock(this.getClass());

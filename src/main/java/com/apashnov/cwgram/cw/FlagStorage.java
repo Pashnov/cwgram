@@ -2,42 +2,56 @@ package com.apashnov.cwgram.cw;
 
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.*;
 
 @Component
 public class FlagStorage {
 
-    private ReadWriteLock lockAttack = new ReentrantReadWriteLock();
-    private ReadWriteLock lockDefend = new ReentrantReadWriteLock();
+    private Lock lockAttack = new ReentrantLock();
+    private Condition conditionAttack = lockAttack.newCondition();
+    private Lock lockDefend = new ReentrantLock();
+    private Condition conditionDefend = lockDefend.newCondition();
 
     private String attack;
     private String defend;
 
     public String getAttack() {
-        lockAttack.readLock().lock();
+        lockAttack.lock();
+        try {
+            conditionAttack.await(3, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         String result = this.attack;
-        lockAttack.readLock().unlock();
+        lockAttack.unlock();
         return result;
     }
 
     public void setAttack(String attack) {
-        lockAttack.writeLock().lock();
         this.attack = attack;
-        lockAttack.writeLock().unlock();
+        lockAttack.lock();
+        conditionAttack.signalAll();
+        lockAttack.unlock();
     }
 
     public String getDefend() {
-        lockDefend.readLock().lock();
+        lockDefend.lock();
+        try {
+            conditionDefend.await(3, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         String result = this.defend;
-        lockDefend.readLock().unlock();
+        lockDefend.unlock();
         return result;
     }
 
     public void setDefend(String defend) {
-        lockDefend.writeLock().lock();
         this.defend = defend;
-        lockDefend.writeLock().unlock();
+        lockDefend.lock();
+        conditionDefend.signalAll();
+        lockDefend.unlock();
     }
 
 }
