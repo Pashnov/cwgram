@@ -92,38 +92,11 @@ public class DatabaseManagerInMemory implements DatabaseManager {
     @Override
     public @NotNull HashMap<Integer, int[]> getDifferencesData() {
         final HashMap<Integer, int[]> differencesDatas = new HashMap<>();
-        System.out.println("need to debug");
-//        try {
-//            final PreparedStatement preparedStatement = connetion.getPreparedStatement("SELECT * FROM DifferencesData");
-//            final ResultSet result = preparedStatement.executeQuery();
-//            while (result.next()) {
-//                final int[] differencesData = new int[3];
-//                differencesData[0] = result.getInt("pts");
-//                differencesData[1] = result.getInt("date");
-//                differencesData[2] = result.getInt("seq");
-//                differencesDatas.put(result.getInt("botId"), differencesData);
-//            }
-//            result.close();
-//        } catch (SQLException e) {
-//            BotLogger.error(LOGTAG,e);
-//        }
         return new HashMap<>(differencesData);
     }
 
     @Override
     public boolean updateDifferencesData(int botId, int pts, int date, int seq) {
-//        int updatedRows = 0;
-//        try {
-//            final PreparedStatement preparedStatement = connetion.getPreparedStatement("REPLACE INTO DifferencesData (botId, pts, date, seq) VALUES (?, ?, ?, ?);");
-//            preparedStatement.setInt(1, botId);
-//            preparedStatement.setInt(2, pts);
-//            preparedStatement.setInt(3, date);
-//            preparedStatement.setInt(4, seq);
-//            updatedRows = preparedStatement.executeUpdate();
-//        } catch (SQLException e) {
-//            BotLogger.error(LOGTAG,e);
-//        }
-//        return updatedRows > 0;
         return differencesData.put(botId, new int[]{pts, date, seq}) != null;
     }
 

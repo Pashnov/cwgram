@@ -11,6 +11,7 @@ import com.apashnov.cwgram.client.model.tl.TLRequestMessagesGetDialogsNew;
 import com.apashnov.cwgram.client.model.tl.TLRequestMessagesGetHistoryNew;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.api.engine.TelegramApi;
@@ -31,7 +32,8 @@ import static com.apashnov.cwgram.Constants.*;
 public class CwGramApplication {
 
     public static void main(String[] args) throws Exception {
-        ConfigurableApplicationContext app = SpringApplication.run(CwGramApplication.class, args);
+//        ConfigurableApplicationContext app = SpringApplication.run(CwGramApplication.class, args);
+        ConfigurableApplicationContext app = new SpringApplicationBuilder(CwGramApplication.class).headless(false).run(args);
 
 //      app.getBean();
 //        DatabaseManagerInMemory db = DatabaseManagerInMemory.getInstance();

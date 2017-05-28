@@ -1,5 +1,6 @@
-package com.apashnov.cwgram.client;
+package com.apashnov.cwgram.client.newp;
 
+import com.apashnov.cwgram.client.ChatUpdatesBuilderImpl;
 import org.telegram.api.engine.LoggerInterface;
 import org.telegram.api.engine.storage.AbsApiState;
 import org.telegram.bot.kernel.differenceparameters.DifferenceParametersService;
@@ -127,7 +128,7 @@ public class TelegramBotNew {
 
     private void createKernelHandler() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         final long start = System.currentTimeMillis();
-        chatUpdatesBuilder.setKernelComm(kernelComm);
+//        chatUpdatesBuilder.setKernelComm(kernelComm);
         this.mainHandler = new MainHandlerWithoutHandlerDiff(kernelComm, chatUpdatesBuilder.build());
         BotLogger.info(LOGTAG, String.format("%s init in %d ms", this.mainHandler.getClass().getName(), (start - System.currentTimeMillis()) * -1));
     }

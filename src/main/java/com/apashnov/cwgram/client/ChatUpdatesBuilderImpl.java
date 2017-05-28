@@ -4,6 +4,7 @@ import com.apashnov.cwgram.client.handler.*;
 import org.telegram.bot.ChatUpdatesBuilder;
 import org.telegram.bot.handlers.UpdatesHandlerBase;
 import org.telegram.bot.kernel.IKernelComm;
+import org.telegram.bot.kernel.KernelComm;
 import org.telegram.bot.kernel.database.DatabaseManager;
 import org.telegram.bot.kernel.differenceparameters.IDifferenceParametersService;
 
@@ -13,22 +14,26 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Created by apashnov on 15.05.2017.
  */
-public class ChatUpdatesBuilderImpl {
+public class ChatUpdatesBuilderImpl implements ChatUpdatesBuilder{
 
-    private KernelCommNew kernelComm;
+    private IKernelComm kernelComm;
     private IDifferenceParametersService differenceParametersService;
     private DatabaseManager databaseManager;
     private MessageHandler messageHandler;
     private UsersHandler usersHandler;
     private ChatsHandler chatsHandler;
     private TLMessageHandler tlMessageHandler;
+    private UpdatesStorage.SpecificStorage specificStorage;
+    private String uniqueName;
 
-    public ChatUpdatesBuilderImpl(DatabaseManager databaseManager, MessageHandler messageHandler, UsersHandler usersHandler, ChatsHandler chatsHandler, TLMessageHandler tlMessageHandler) {
+    public ChatUpdatesBuilderImpl(DatabaseManager databaseManager, MessageHandler messageHandler, UsersHandler usersHandler, ChatsHandler chatsHandler, TLMessageHandler tlMessageHandler, UpdatesStorage.SpecificStorage specificStorage, String uniqueName) {
         this.databaseManager = databaseManager;
         this.messageHandler = messageHandler;
         this.usersHandler = usersHandler;
         this.chatsHandler = chatsHandler;
         this.tlMessageHandler = tlMessageHandler;
+        this.uniqueName = uniqueName;
+        this.specificStorage = specificStorage;
     }
 
 
@@ -41,16 +46,14 @@ public class ChatUpdatesBuilderImpl {
         }
 
         messageHandler.setKernelComm(this.kernelComm);
-//        final Constructor<CustomUpdatesHandler> constructor = updatesHandlerBase.getConstructor(IKernelComm.class, IDifferenceParametersService.class, DatabaseManager.class);
-//        final CustomUpdatesHandler updatesHandler =
-//                constructor.newInstance(kernelComm, differenceParametersService, getDatabaseManager());
-//        CustomUpdatesHandler updatesHandler = new CustomUpdatesHandler(kernelComm, differenceParametersService, getDatabaseManager());
+
+        CustomUpdatesHandler updatesHandler = new CustomUpdatesHandler(kernelComm, differenceParametersService, getDatabaseManager(),specificStorage, uniqueName );
 //        updatesHandler.setConfig(botConfig);
-//        updatesHandler.setHandlers(messageHandler, usersHandler, chatsHandler, tlMessageHandler);
-        return null;
+        updatesHandler.setHandlers(messageHandler, usersHandler, chatsHandler, tlMessageHandler);
+        return updatesHandler;
     }
 
-    public void setKernelComm(KernelCommNew kernelComm) {
+    public void setKernelComm(IKernelComm kernelComm) {
         this.kernelComm = kernelComm;
     }
 

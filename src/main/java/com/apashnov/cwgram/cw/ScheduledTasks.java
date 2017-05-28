@@ -1,6 +1,7 @@
 package com.apashnov.cwgram.cw;
 
 import com.apashnov.cwgram.cw.handler.GetterFlagHandler;
+import com.apashnov.cwgram.cw.handler.QuestHandler;
 import com.apashnov.cwgram.cw.handler.ReaderFlagHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -26,10 +27,22 @@ public class ScheduledTasks {
         lock.unlock();
     }
 
+    //    @Scheduled(cron = "0 58 3,7,11,15,19,23 * * *")
     @Scheduled(cron = "0 58 3,7,11,15,19,23 * * *")
     public void signalReaderFlagHandler() {
         Lock lock = notifier.getLock(ReaderFlagHandler.class);
         Condition condition = notifier.getCondition(ReaderFlagHandler.class);
+        lock.lock();
+        condition.signalAll();
+        lock.unlock();
+    }
+
+//    @Scheduled(initialDelay = 2000)
+//    @Scheduled(fixedRate = 15000)
+    @Scheduled(initialDelay = 10000, fixedRate = 4 * 60 * 60 * 1000)
+    public void signalQuestHandler() {
+        Lock lock = notifier.getLock(QuestHandler.class);
+        Condition condition = notifier.getCondition(QuestHandler.class);
         lock.lock();
         condition.signalAll();
         lock.unlock();

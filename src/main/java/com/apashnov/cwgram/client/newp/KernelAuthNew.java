@@ -1,4 +1,4 @@
-package com.apashnov.cwgram.client;
+package com.apashnov.cwgram.client.newp;
 
 import org.telegram.api.TLConfig;
 import org.telegram.api.auth.TLAuthorization;

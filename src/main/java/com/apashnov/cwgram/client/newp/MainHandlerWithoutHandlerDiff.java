@@ -1,4 +1,4 @@
-package com.apashnov.cwgram.client;
+package com.apashnov.cwgram.client.newp;
 
 import org.jetbrains.annotations.NotNull;
 import org.telegram.api.engine.RpcException;
@@ -6,14 +6,9 @@ import org.telegram.api.functions.updates.TLRequestUpdatesGetState;
 import org.telegram.api.updates.*;
 import org.telegram.bot.handlers.UpdatesHandlerBase;
 import org.telegram.bot.handlers.interfaces.IUpdatesHandler;
-import org.telegram.bot.kernel.IKernelComm;
-import org.telegram.bot.kernel.MainHandler;
-import org.telegram.bot.kernel.UpdateWrapper;
 import org.telegram.bot.services.BotLogger;
 import org.telegram.bot.services.NotificationsService;
 
-import java.util.List;
-import java.util.PriorityQueue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;

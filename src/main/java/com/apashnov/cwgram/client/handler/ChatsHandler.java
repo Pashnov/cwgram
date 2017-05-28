@@ -18,7 +18,12 @@ import java.util.List;
  */
 public class ChatsHandler implements IChatsHandler {
 
-    private static final String LOGTAG = "ChatsHandler#";
+    private static final String LOGTAG = "CHATSHANDLER";
+    private final DatabaseManagerInMemory databaseManager;
+
+    public ChatsHandler(DatabaseManagerInMemory databaseManager) {
+        this.databaseManager = databaseManager;
+    }
 
     @Override
     public void onChats(List<TLAbsChat> chats) {
@@ -27,17 +32,27 @@ public class ChatsHandler implements IChatsHandler {
 
     private void onAbsChat(TLAbsChat chat) {
         if (chat instanceof TLChannel) {
+            if(!((TLChannel) chat).getTitle().equals("Chat Wars Marketplace")
+                    && !((TLChannel) chat).getTitle().equals("RedAlert Legion")){
+                System.out.println(chat); // can be get channel aka group - title =  RedAlert Legion
+            }
 //            onChannel((TLChannel) chat);
         } else if (chat instanceof TLChannelForbidden) {
 //            onChannelForbidden((TLChannelForbidden) chat);
         } else if (chat instanceof TLChat) {
+            System.out.println(chat);
             onChat((TLChat) chat);
         } else if (chat instanceof TLChatForbidden) {
-//            onChatForbidden((TLChatForbidden) chat);
+            onChatForbidden((TLChatForbidden) chat);
         } else {
             BotLogger.warn(LOGTAG, "Unsupported chat type " + chat);
         }
     }
+
+    private void onChatForbidden(TLChatForbidden chat) {
+        onChat(chat.getId());
+    }
+
 
     private void onChat(TLChat chat) {
         onChat(chat.getId());
@@ -45,7 +60,7 @@ public class ChatsHandler implements IChatsHandler {
 
     private void onChat(int chatId) {
         boolean updating = true;
-        ChatImpl current = (ChatImpl) DatabaseManagerInMemory.getInstance().getChatById(chatId);
+        ChatImpl current = (ChatImpl) databaseManager.getChatById(chatId);
         if (current == null) {
             updating = false;
             current = new ChatImpl(chatId);
@@ -53,9 +68,47 @@ public class ChatsHandler implements IChatsHandler {
         current.setChannel(false);
 
         if (updating) {
-            DatabaseManagerInMemory.getInstance().updateChat(current);
+            databaseManager.updateChat(current);
         } else {
-            DatabaseManagerInMemory.getInstance().addChat(current);
+            databaseManager.addChat(current);
         }
     }
+
+
+    private void onChannelForbidden(TLChannelForbidden channel) {
+        boolean updating = true;
+        ChatImpl current = (ChatImpl) databaseManager.getChatById(channel.getId());
+        if (current == null) {
+            updating = false;
+            current = new ChatImpl(channel.getId());
+        }
+        current.setChannel(true);
+        current.setAccessHash(channel.getAccessHash());
+
+        if (updating) {
+            databaseManager.updateChat(current);
+        } else {
+            databaseManager.addChat(current);
+        }
+    }
+
+    private void onChannel(TLChannel channel) {
+        boolean updating = true;
+        ChatImpl current = (ChatImpl) databaseManager.getChatById(channel.getId());
+        if (current == null) {
+            updating = false;
+            current = new ChatImpl(channel.getId());
+        }
+        current.setChannel(true);
+        if (channel.hasAccessHash()) {
+            current.setAccessHash(channel.getAccessHash());
+        }
+
+        if (updating) {
+            databaseManager.updateChat(current);
+        } else {
+            databaseManager.addChat(current);
+        }
+    }
+
 }

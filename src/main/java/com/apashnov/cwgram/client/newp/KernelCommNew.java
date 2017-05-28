@@ -1,4 +1,4 @@
-package com.apashnov.cwgram.client;
+package com.apashnov.cwgram.client.newp;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -35,8 +35,6 @@ import org.telegram.api.updates.TLUpdateShort;
 import org.telegram.bot.GenericErrorTelegramFunctionCallback;
 import org.telegram.bot.TelegramFunctionCallback;
 import org.telegram.bot.factories.TLFactory;
-import org.telegram.bot.kernel.KernelComm;
-import org.telegram.bot.kernel.MainHandler;
 import org.telegram.bot.services.BotLogger;
 import org.telegram.bot.services.NotificationsService;
 import org.telegram.bot.structure.Chat;

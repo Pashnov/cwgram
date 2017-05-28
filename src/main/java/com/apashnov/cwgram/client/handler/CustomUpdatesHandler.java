@@ -1,5 +1,7 @@
 package com.apashnov.cwgram.client.handler;
 
+import com.apashnov.cwgram.client.UpdatesStorage;
+import com.apashnov.cwgram.client.model.User;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.api.chat.TLAbsChat;
 import org.telegram.api.message.TLAbsMessage;
@@ -19,6 +21,10 @@ import org.telegram.bot.structure.IUser;
 
 import java.util.List;
 
+import static com.apashnov.cwgram.Constants.CHAT_WARS_ID;
+import static com.apashnov.cwgram.Constants.RED_ALERT_ID;
+import static com.apashnov.cwgram.cw.CwActionHelper.convert;
+
 /**
  * Created by apashnov on 15.05.2017.
  */
@@ -31,10 +37,16 @@ public class CustomUpdatesHandler extends DefaultUpdatesHandler {
     private IUsersHandler usersHandler;
     private IChatsHandler chatsHandler;
     private TLMessageHandler tlMessageHandler;
+    private UpdatesStorage.SpecificStorage specificStorage;
+    private String uniqueName;
+    private IKernelComm kernelComm;
 
-    public CustomUpdatesHandler(IKernelComm kernelComm, IDifferenceParametersService differenceParametersService, DatabaseManager databaseManager) {
+    public CustomUpdatesHandler(IKernelComm kernelComm, IDifferenceParametersService differenceParametersService, DatabaseManager databaseManager, UpdatesStorage.SpecificStorage specificStorage, String uniqueName) {
         super(kernelComm, differenceParametersService, databaseManager);
         this.databaseManager = databaseManager;
+        this.uniqueName = uniqueName;
+        this.specificStorage = specificStorage;
+        this.kernelComm = kernelComm;
     }
 
     public void setConfig(BotConfig botConfig) {
@@ -68,7 +80,16 @@ public class CustomUpdatesHandler extends DefaultUpdatesHandler {
             BotLogger.debug(LOGTAG, "Received TLMessage");
             onTLMessage((TLMessage) message);
         } else {
+            BotLogger.debug(LOGTAG, "!!!!!!!!!!!!!!!!!!!!!!! -> " + message.toString());
+            BotLogger.debug(LOGTAG, "!!!!!!!!!!!!!!!!!!!!!!! -> " + message.toString());
+            BotLogger.debug(LOGTAG, "!!!!!!!!!!!!!!!!!!!!!!! -> " + message.toString());
+            BotLogger.debug(LOGTAG, "!!!!!!!!!!!!!!!!!!!!!!! -> " + message.toString());
             BotLogger.debug(LOGTAG, "Unsupported TLAbsMessage -> " + message.toString());
+            BotLogger.debug(LOGTAG, "Unsupported TLAbsMessage_class -> " + message.getClass());
+            BotLogger.debug(LOGTAG, "!!!!!!!!!!!!!!!!!!!!!!! -> " + message.toString());
+            BotLogger.debug(LOGTAG, "!!!!!!!!!!!!!!!!!!!!!!! -> " + message.toString());
+            BotLogger.debug(LOGTAG, "!!!!!!!!!!!!!!!!!!!!!!! -> " + message.toString());
+            BotLogger.debug(LOGTAG, "!!!!!!!!!!!!!!!!!!!!!!! -> " + message.toString());
         }
     }
 
@@ -87,11 +108,30 @@ public class CustomUpdatesHandler extends DefaultUpdatesHandler {
      * @param message Message to handle
      */
     private void onTLMessage(@NotNull TLMessage message) {
+        System.out.println(uniqueName + "onTLMessage#, from msg -> " + message.getMessage() +", fromId -> " + message.getFromId());
         if (message.hasFromId()) {
-            final IUser user = databaseManager.getUserById(message.getFromId());
-            if (user != null) {
-                this.tlMessageHandler.onTLMessage(message);
+//            kernelComm.performMarkAsRead(new User(kernelComm.getCurrentUserId(), kernelComm.), 0);
+            switch (message.getFromId()){
+                case CHAT_WARS_ID:
+                    System.out.println(uniqueName + "onTLMessage#, CHAT_WARS_ID, from msg -> " + message.getMessage());
+                    specificStorage.putChatWars(message);
+                    break;
             }
+            switch (message.getToId().getId()){
+                case RED_ALERT_ID:
+                    System.out.println(uniqueName + "onTLMessage#, RED_ALERT_ID, to msg -> " + message.getMessage());
+                    specificStorage.putRedAlert(message);
+                    break;
+                case CHAT_WARS_ID:
+                    specificStorage.putChatWars(message);
+                    System.out.println(uniqueName + "onTLMessage#, CHAT_WARS_ID, to msg -> " + message.getMessage());
+                    break;
+            }
+//            final IUser user = databaseManager.getUserById(message.getFromId());
+//            if (user != null) {
+//                this.tlMessageHandler.onTLMessage(message);
+//            }
         }
     }
+
 }

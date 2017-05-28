@@ -1,9 +1,8 @@
 package com.apashnov.cwgram;
 
+import com.apashnov.cwgram.client.UpdatesStorage;
 import com.apashnov.cwgram.cw.*;
-import com.apashnov.cwgram.cw.handler.CwHandler;
-import com.apashnov.cwgram.cw.handler.GetterFlagHandler;
-import com.apashnov.cwgram.cw.handler.ReaderFlagHandler;
+import com.apashnov.cwgram.cw.handler.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -17,9 +16,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 //java -jar -Dbase.path="C:\my_projects\cwgram\build\libs" cwgram-0.0.1-SNAPSHOT.jar
 
@@ -34,9 +36,6 @@ public class CwGramConfig {
     @Value("${cw.defender}")
     boolean isDef;
 
-    @Value("${cw.group.red.alert.id}")
-    long groupId;
-
     @Value("${base.path}")
     String basePath;
 
@@ -50,13 +49,14 @@ public class CwGramConfig {
     ApplicationContext applicationContext;
 
     @Bean
-    public List<Container> containers() throws IOException {
-        System.out.println(isDef);
-        System.out.println(groupId);
+    public List<Container> containers(UpdatesStorage updatesStorage) throws IOException {
+        boolean questAllow = true;
+        boolean caravanSecurity = true;
+
         List<Container> containers = Files.list(Paths.get(basePath))
                 .filter(path -> Files.isDirectory(path))
                 .map(path -> new Container(path))
-                .peek(container -> container.activate(apiKey, apiHash))
+                .peek(container -> container.activate(apiKey, apiHash, updatesStorage))
                 .collect(Collectors.toList());
 
         containers.sort(Comparator.comparing(Container::getId));
@@ -69,9 +69,19 @@ public class CwGramConfig {
             } else {
                 container.addHandler(applicationContext.getBean(ReaderFlagHandler.class));
             }
+
+            if(questAllow){
+                container.addHandler(applicationContext.getBean(QuestHandler.class));
+            }
+
+            if(caravanSecurity){
+                container.addHandler(applicationContext.getBean(CaravanSecurityHandler.class));
+            }
         }
 
         return containers;
     }
+
+
 
 }

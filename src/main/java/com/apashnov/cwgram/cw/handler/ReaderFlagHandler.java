@@ -1,6 +1,6 @@
 package com.apashnov.cwgram.cw.handler;
 
-import com.apashnov.cwgram.client.KernelCommNew;
+import com.apashnov.cwgram.client.UpdatesStorage;
 import com.apashnov.cwgram.client.model.tl.TLRequestMessagesGetDialogsNew;
 import com.apashnov.cwgram.cw.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,18 +25,26 @@ public class ReaderFlagHandler implements CwHandler {
 
     @Autowired
     private FlagStorage flagStorage;
+    @Autowired
+    private UpdatesStorage updatesStorage;
 
     private TLUser chatWarsBot;
 
     private Lock notifier;
     private Condition condition;
+    private String uniqueName;
+    private String phoneNumber;
+    private UpdatesStorage.SpecificStorage specificStorage;
 
     @Override
-    public void handle(Warrior warrior, KernelCommNew kernelComm, String uniqueName) {
+    public void handle(Warrior warrior, IKernelComm kernelComm, String uniqueName, String phoneNumber) {
+        this.uniqueName = uniqueName;
+        this.phoneNumber = phoneNumber;
+        this.specificStorage = updatesStorage.get(phoneNumber);
         new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println(uniqueName + "started");
+                System.out.println(uniqueName + "started ReaderFlagHandler");
                 TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 99);
                 TLDialogs tlDialogs = null;
                 try {
@@ -51,7 +59,7 @@ public class ReaderFlagHandler implements CwHandler {
                         waitUntilWaked(notifier, condition);
                         System.out.println(uniqueName + " waked to read flag");
 
-                        goToMainMenuThanRedDefThanGoingAttack(kernelComm, chatWarsBot);
+                        goToMainMenuThanRedDefThanGoingAttack(kernelComm, chatWarsBot, specificStorage, uniqueName);
                         String currentFlag = CwConstants.BTN_RED_FLAG;
                         while (notRegimeNoise()) {
                             System.out.println(uniqueName+"currentFlag -> " + currentFlag);
@@ -74,7 +82,7 @@ public class ReaderFlagHandler implements CwHandler {
                             } else {
                                 currentFlag = flag;
                                 System.out.println(uniqueName+ "going to send flag -> " + currentFlag);
-                                sendFlagThanGoingAttack(currentFlag, kernelComm, chatWarsBot);
+                                sendFlagThanGoingAttack(currentFlag, kernelComm, chatWarsBot, specificStorage, uniqueName);
 //                                try {
 //                                    Thread.sleep(3003);
 //                                } catch (InterruptedException e) {

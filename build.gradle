@@ -32,6 +32,7 @@ dependencies {
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 
 	// https://mvnrepository.com/artifact/org.telegram/telegramapi
-	compile group: 'org.telegram', name: 'telegramapi', version: '57.3'
+	compile group: 'org.telegram', name: 'telegramapi', version: '66.0'
+//	compile group: 'org.telegram', name: 'telegramapi', version: '57.3'
 
 }

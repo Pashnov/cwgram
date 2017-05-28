@@ -1,6 +1,9 @@
 package com.apashnov.cwgram.cw;
 
-import com.apashnov.cwgram.client.*;
+import com.apashnov.cwgram.client.ChatUpdatesBuilderImpl;
+import com.apashnov.cwgram.client.ClientConfig;
+import com.apashnov.cwgram.client.DatabaseManagerInMemory;
+import com.apashnov.cwgram.client.UpdatesStorage;
 import com.apashnov.cwgram.client.handler.ChatsHandler;
 import com.apashnov.cwgram.client.handler.MessageHandler;
 import com.apashnov.cwgram.client.handler.TLMessageHandler;
@@ -10,10 +13,8 @@ import org.telegram.bot.kernel.IKernelComm;
 import org.telegram.bot.kernel.TelegramBot;
 import org.telegram.bot.structure.LoginStatus;
 
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.Properties;
 
@@ -27,7 +28,8 @@ public class Container {
     private String name;
     private Path path;
     private Warrior warrior;
-    private KernelCommNew kernelComm;
+    private IKernelComm kernelComm;
+    private Properties properties;
 
     public Container(Path path) {
         String[] split = path.getFileName().toString().split("_");
@@ -48,11 +50,12 @@ public class Container {
         } catch (IOException e) {
             throw new RuntimeException(getUniqueName() + "not successfully load " + GLOBAL_FILE_NAME);
         }
-        try (FileReader reader = new FileReader(path.resolve(LOCAL_FILE_NAME).toString())){
+        try (FileReader reader = new FileReader(path.resolve(LOCAL_FILE_NAME).toString())) {
             properties.load(reader);
         } catch (IOException e) {
             System.out.println(getUniqueName() + "not successfully load " + LOCAL_FILE_NAME);
         }
+        this.properties = properties;
         warrior = new Warrior(properties);
     }
 
@@ -60,28 +63,34 @@ public class Container {
         return phoneNumber + "(" + name + ") -> ";
     }
 
-    public void activate(int apiKey, String apiHash) {
+    public void activate(int apiKey, String apiHash, UpdatesStorage updatesStorage) {
         DatabaseManagerInMemory db = DatabaseManagerInMemory.getInstance();
         MessageHandler msgHandler = new MessageHandler();
-        ChatUpdatesBuilderImpl chatUpdatesBuilder = new ChatUpdatesBuilderImpl(db, msgHandler, new UsersHandler(), new ChatsHandler(), new TLMessageHandler(msgHandler, db));
+        ChatUpdatesBuilderImpl chatUpdatesBuilder = new ChatUpdatesBuilderImpl(db, msgHandler, new UsersHandler(db), new ChatsHandler(db),
+                new TLMessageHandler(msgHandler, db, updatesStorage.get(phoneNumber), getUniqueName()), updatesStorage.get(phoneNumber), getUniqueName());
 
         ClientConfig config = new ClientConfig(path, phoneNumber);
 
-        final TelegramBotNew kernel = new TelegramBotNew(config, chatUpdatesBuilder, apiKey, apiHash);
+        final TelegramBot kernel = new TelegramBot(config, chatUpdatesBuilder, apiKey, apiHash);
 
         LoginStatus status;
         try {
             status = kernel.init();
 
             if (status == LoginStatus.CODESENT) {
-                System.out.println("type code for -> " + phoneNumber);
-                System.out.println("and click enter");
-                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-                String code = br.readLine().trim();
+                ViewInputCode.getText().setText("type code for -> " + phoneNumber + " below");
+                ViewInputCode.getCode().setText("");
+                ViewInputCode.show();
+
+                Thread.sleep(5000);
+                String code = ViewInputCode.getCode().getText();
                 while (!isMatch(code)) {
-                    System.out.println("type code again for -> " + phoneNumber);
-                    code = br.readLine().trim();
+                    Thread.sleep(2000);
+                    code = ViewInputCode.getCode().getText();
                 }
+
+                ViewInputCode.hide();
+//                out.close();
                 boolean success = kernel.getKernelAuth().setAuthCode(code);
                 if (success) {
                     status = LoginStatus.ALREADYLOGGED;
@@ -91,6 +100,7 @@ public class Container {
             if (status == LoginStatus.ALREADYLOGGED) {
                 System.out.println(phoneNumber + "(" + name + ") logged in successfully");
                 kernelComm = kernel.getKernelComm();
+                kernel.startBot();  // aka turn on getDifAllTime;
             } else {
                 throw new RuntimeException("Failed to log in: " + status + ", for  -> " + phoneNumber);
             }
@@ -123,8 +133,8 @@ public class Container {
         return name;
     }
 
-    public void addHandler(CwHandler handler){
-        handler.handle(warrior, kernelComm, getUniqueName());
+    public void addHandler(CwHandler handler) {
+        handler.handle(warrior, kernelComm, getUniqueName(), phoneNumber);
     }
 
 }
