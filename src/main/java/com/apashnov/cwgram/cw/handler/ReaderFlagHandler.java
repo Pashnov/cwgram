@@ -45,7 +45,7 @@ public class ReaderFlagHandler implements CwHandler {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                log(uniqueName,"started ReaderFlagHandler");
+                log(uniqueName,"run#started ReaderFlagHandler");
                 TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 99);
                 TLDialogs tlDialogs = null;
                 try {
@@ -58,21 +58,21 @@ public class ReaderFlagHandler implements CwHandler {
                 while (true) {
                     try {
                         waitUntilWaked(notifier, condition);
-                        log(uniqueName," waked to read flag");
+                        log(uniqueName,"run# waked to read flag");
 
                         goToMainMenuThanRedDefThanGoingAttack(kernelComm, chatWarsBot, specificStorage, uniqueName);
                         String currentFlag = CwConstants.BTN_RED_FLAG;
                         while (notRegimeNoise()) {
-                            log(uniqueName+"currentFlag -> " + currentFlag);
+                            log(uniqueName,"run#currentFlag -> " + currentFlag);
                             String flag;
                             if (WarriorKind.AGGRESSOR == warrior.getKind()) {
-                                log(uniqueName+" going to get atk flag");
+                                log(uniqueName,"run# going to get atk flag");
                                 flag = flagStorage.getAttack();
-                                log(uniqueName+" got atk flag -> " + flag);
+                                log(uniqueName," got atk flag -> " + flag);
                             } else {
-                                log(uniqueName+" going to get def flag");
+                                log(uniqueName,"run# going to get def flag");
                                 flag = flagStorage.getDefend();
-                                log(uniqueName+" got def flag -> " + flag);
+                                log(uniqueName,"run# got def flag -> " + flag);
                             }
                             if (flag == null || flag == currentFlag) {
 //                                try {
@@ -82,7 +82,7 @@ public class ReaderFlagHandler implements CwHandler {
 //                                }
                             } else {
                                 currentFlag = flag;
-                                log(uniqueName+ "going to send flag -> " + currentFlag);
+                                log(uniqueName, "run#going to send flag -> " + currentFlag);
                                 sendFlagThanGoingAttack(currentFlag, kernelComm, chatWarsBot, specificStorage, uniqueName);
 //                                try {
 //                                    Thread.sleep(3003);

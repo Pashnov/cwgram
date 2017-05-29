@@ -72,7 +72,7 @@ public class QuestHandler implements CwHandler {
                 while (true) {
                     try {
                         waitUntilWaked(notifier, condition);
-                        log(uniqueName," waked to go in quests");
+                        log(uniqueName,"run# waked to go in quests");
                         //todo: add change equip
                         List<String> quests = getQuest();
                         for (String quest : quests) {
@@ -93,7 +93,7 @@ public class QuestHandler implements CwHandler {
     }
 
     public static TLUser findChatWarsUser(IKernelComm kernelComm, String uniqueName) {
-        log(uniqueName,"started QuestHandler");
+        log(uniqueName,"findChatWarsUser#started QuestHandler");
         TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 100);
         TLDialogs tlDialogs = null;
         try {
@@ -106,14 +106,14 @@ public class QuestHandler implements CwHandler {
     }
 
     private void clickSpecificQuest(IKernelComm kernelComm, String quest) throws RpcException, InterruptedException, ExecutionException {
-        sendMessage(kernelComm, convert(chatWarsBot), quest);
-        log(uniqueName,"clicked -> " + quest);
+        sendMessage(uniqueName, kernelComm, convert(chatWarsBot), quest);
+        log(uniqueName,"clickSpecificQuest#clicked -> " + quest);
         List<TLMessage> tlMessages = waitResponse(specificStorage, chatWarsBot, uniqueName);
         String msg = tlMessages.get(0).getMessage();
-        if(!msg.contains("Ты отправился искать")) {
+        if(!(msg.contains("Ты отправился искать") || msg.contains("Слишком мало единиц выносливости"))) {
             String buttonText = captchaSolver.solve(msg);
             if (buttonText != null) {
-                sendMessage(kernelComm, convert(chatWarsBot), buttonText);
+                sendMessage(uniqueName, kernelComm, convert(chatWarsBot), buttonText);
             } else {
                 TLReplayKeyboardMarkup replyMarkup;
                 do {
@@ -124,12 +124,13 @@ public class QuestHandler implements CwHandler {
                 //todo use captchawator
             }
         }
+        log(uniqueName,"clickSpecificQuest# out");
     }
 
     private void clickQuest(IKernelComm kernelComm) throws RpcException, InterruptedException, ExecutionException {
-        sendMessage(kernelComm, convert(chatWarsBot), BTN_QUEST);
+        sendMessage(uniqueName, kernelComm, convert(chatWarsBot), BTN_QUEST);
         //todo read all above msg
-        log(uniqueName,"clicked quest");
+        log(uniqueName,"clickQuest# clicked quest");
         waitResponse(specificStorage, chatWarsBot, uniqueName);
     }
 

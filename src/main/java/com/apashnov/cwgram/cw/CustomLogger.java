@@ -24,6 +24,7 @@ public class CustomLogger {
                 BufferedWriter out = userResource.get(uniqueName);
                 if (out == null) {
                     out = new BufferedWriter(new FileWriter(basePath + File.separator + ".." + File.separator + LOG_PATH + File.separator + uniqueName + ".log"));
+                    userResource.put(uniqueName, out);
                 }
                 out.newLine();
                 out.append(LocalDateTime.now() + "-");

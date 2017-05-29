@@ -65,7 +65,7 @@ public class Container {
     }
 
     public String getUniqueName() {
-        return idStr +"_"+phoneNumber + "(" + name + ") -> ";
+        return idStr +"_"+phoneNumber + "(" + name + ") - ";
     }
 
     public void activate(int apiKey, String apiHash, UpdatesStorage updatesStorage) {
@@ -103,7 +103,7 @@ public class Container {
 
             }
             if (status == LoginStatus.ALREADYLOGGED) {
-                log(phoneNumber, " logged in successfully");
+                log(getUniqueName(), " logged in successfully");
                 kernelComm = kernel.getKernelComm();
                 kernel.startBot();  // aka turn on getDifAllTime;
             } else {

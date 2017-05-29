@@ -51,7 +51,7 @@ public class TLMessageHandler {
 
     private void onTLMessageForUser(TLMessage message) {
         System.out.println(message);
-        log(uniqueName, "msg ->" + message.getMessage());
+//        log(uniqueName, "onTLMessageForUser#msg ->" + message.getMessage());
         if (!message.isSent()) {
             final IUser user = databaseManager.getUserById(message.getFromId());
             if (user != null) {
