@@ -16,12 +16,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 //java -jar -Dbase.path="C:\my_projects\cwgram\build\libs" cwgram-0.0.1-SNAPSHOT.jar
 
@@ -33,11 +29,8 @@ public class CwGramConfig {
     @Autowired
     Environment env;
 
-    @Value("${cw.defender}")
-    boolean isDef;
-
     @Value("${base.path}")
-    String basePath;
+    private String basePath;
 
     @Value("${cw.gram.api.key}")
     int apiKey;
@@ -50,6 +43,7 @@ public class CwGramConfig {
 
     @Bean
     public List<Container> containers(UpdatesStorage updatesStorage) throws IOException {
+        CustomLogger.setBasePath(basePath);
         boolean questAllow = true;
         boolean caravanSecurity = true;
 

@@ -1,5 +1,7 @@
 package com.apashnov.cwgram.cw;
 
+import org.springframework.stereotype.Component;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -12,28 +14,33 @@ public class CustomLogger {
 
     public static final String LOG_PATH = "/log";
 
+    private static String basePath;
+
     private static Map<String, BufferedWriter> userResource = new ConcurrentHashMap<>();
 
     public static void log(String uniqueName, Object... args) {
-        synchronized (uniqueName){
+        synchronized (uniqueName) {
             try {
                 BufferedWriter out = userResource.get(uniqueName);
                 if (out == null) {
-                    out = new BufferedWriter(new FileWriter(LOG_PATH + File.separator + uniqueName));
+                    out = new BufferedWriter(new FileWriter(basePath + File.separator + ".." + File.separator + LOG_PATH + File.separator + uniqueName + ".log"));
                 }
                 out.newLine();
-                out.append(LocalDateTime.now() + ", ");
+                out.append(LocalDateTime.now() + "-");
                 out.append(uniqueName + ", ");
                 for (Object arg : args) {
                     out.append(String.valueOf(arg) + ", ");
                 }
                 out.append(";");
                 out.flush();
-            } catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
-                throw new RuntimeException("logger failed, uniqueName ->" + uniqueName,e);
+                throw new RuntimeException("logger failed, uniqueName ->" + uniqueName, e);
             }
         }
     }
 
+    public static void setBasePath(String basePath) {
+        CustomLogger.basePath = basePath;
+    }
 }
