@@ -18,12 +18,15 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Properties;
 
+import static com.apashnov.cwgram.cw.CustomLogger.log;
+
 public class Container {
 
     public static final String LOCAL_FILE_NAME = "local.properties";
     public static final String GLOBAL_FILE_NAME = "global.properties";
 
     private int id;
+    private String idStr;
     private String phoneNumber;
     private String name;
     private Path path;
@@ -34,6 +37,7 @@ public class Container {
     public Container(Path path) {
         String[] split = path.getFileName().toString().split("_");
         id = Integer.valueOf(split[0]);
+        idStr = split[0];
         phoneNumber = name = split[1];
         if (split.length == 3) {
             name = split[2];
@@ -54,13 +58,14 @@ public class Container {
             properties.load(reader);
         } catch (IOException e) {
             System.out.println(getUniqueName() + "not successfully load " + LOCAL_FILE_NAME);
+            log(getUniqueName(), "not successfully load " + LOCAL_FILE_NAME);
         }
         this.properties = properties;
         warrior = new Warrior(properties);
     }
 
     public String getUniqueName() {
-        return phoneNumber + "(" + name + ") -> ";
+        return idStr +"_"+phoneNumber + "(" + name + ") -> ";
     }
 
     public void activate(int apiKey, String apiHash, UpdatesStorage updatesStorage) {
@@ -98,7 +103,7 @@ public class Container {
 
             }
             if (status == LoginStatus.ALREADYLOGGED) {
-                System.out.println(phoneNumber + "(" + name + ") logged in successfully");
+                log(phoneNumber, " logged in successfully");
                 kernelComm = kernel.getKernelComm();
                 kernel.startBot();  // aka turn on getDifAllTime;
             } else {

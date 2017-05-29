@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.apashnov.cwgram.Constants.*;
+import static com.apashnov.cwgram.cw.CustomLogger.log;
 import static com.apashnov.cwgram.cw.CwActionHelper.*;
 
 @Component
@@ -71,7 +72,7 @@ public class QuestHandler implements CwHandler {
                 while (true) {
                     try {
                         waitUntilWaked(notifier, condition);
-                        System.out.println(uniqueName + " waked to go in quests");
+                        log(uniqueName," waked to go in quests");
                         //todo: add change equip
                         List<String> quests = getQuest();
                         for (String quest : quests) {
@@ -79,24 +80,6 @@ public class QuestHandler implements CwHandler {
                             clickSpecificQuest(kernelComm, quest);
 
                             Thread.sleep(6 * 60 * 1000);
-//                            if (flag == null || flag == currentFlag) {
-//                                try {
-//                                    Thread.sleep(3075);
-//                                    continue;
-//                                } catch (InterruptedException e) {
-//                                    e.printStackTrace();
-//                                }
-//                            } else {
-//                                currentFlag = flag;
-//                                System.out.println(uniqueName + "going to send flag -> " + currentFlag);
-//                                sendFlagThanGoingAttack(currentFlag, kernelComm, chatWarsBot, specificStorage);
-//                                try {
-//                                    Thread.sleep(2075);
-//                                    continue;
-//                                } catch (InterruptedException e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -110,7 +93,7 @@ public class QuestHandler implements CwHandler {
     }
 
     public static TLUser findChatWarsUser(IKernelComm kernelComm, String uniqueName) {
-        System.out.println(uniqueName + "started QuestHandler");
+        log(uniqueName,"started QuestHandler");
         TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 100);
         TLDialogs tlDialogs = null;
         try {
@@ -123,14 +106,14 @@ public class QuestHandler implements CwHandler {
     }
 
     private void clickSpecificQuest(IKernelComm kernelComm, String quest) throws RpcException, InterruptedException, ExecutionException {
-        kernelComm.sendMessage(convert(chatWarsBot), quest);
-        System.out.println(uniqueName+"clicked -> " + quest);
+        sendMessage(kernelComm, convert(chatWarsBot), quest);
+        log(uniqueName,"clicked -> " + quest);
         List<TLMessage> tlMessages = waitResponse(specificStorage, chatWarsBot, uniqueName);
         String msg = tlMessages.get(0).getMessage();
         if(!msg.contains("Ты отправился искать")) {
             String buttonText = captchaSolver.solve(msg);
             if (buttonText != null) {
-                kernelComm.sendMessage(convert(chatWarsBot), buttonText);
+                sendMessage(kernelComm, convert(chatWarsBot), buttonText);
             } else {
                 TLReplayKeyboardMarkup replyMarkup;
                 do {
@@ -144,9 +127,9 @@ public class QuestHandler implements CwHandler {
     }
 
     private void clickQuest(IKernelComm kernelComm) throws RpcException, InterruptedException, ExecutionException {
-        kernelComm.sendMessage(convert(chatWarsBot), BTN_QUEST);
+        sendMessage(kernelComm, convert(chatWarsBot), BTN_QUEST);
         //todo read all above msg
-        System.out.println(uniqueName+"clicked quest");
+        log(uniqueName,"clicked quest");
         waitResponse(specificStorage, chatWarsBot, uniqueName);
     }
 

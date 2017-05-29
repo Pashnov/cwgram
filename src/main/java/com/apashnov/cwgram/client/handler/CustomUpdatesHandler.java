@@ -23,6 +23,7 @@ import java.util.List;
 
 import static com.apashnov.cwgram.Constants.CHAT_WARS_ID;
 import static com.apashnov.cwgram.Constants.RED_ALERT_ID;
+import static com.apashnov.cwgram.cw.CustomLogger.log;
 import static com.apashnov.cwgram.cw.CwActionHelper.convert;
 
 /**
@@ -80,6 +81,7 @@ public class CustomUpdatesHandler extends DefaultUpdatesHandler {
             BotLogger.debug(LOGTAG, "Received TLMessage");
             onTLMessage((TLMessage) message);
         } else {
+            log(uniqueName, message.toString());
             BotLogger.debug(LOGTAG, "!!!!!!!!!!!!!!!!!!!!!!! -> " + message.toString());
             BotLogger.debug(LOGTAG, "!!!!!!!!!!!!!!!!!!!!!!! -> " + message.toString());
             BotLogger.debug(LOGTAG, "!!!!!!!!!!!!!!!!!!!!!!! -> " + message.toString());
@@ -108,23 +110,23 @@ public class CustomUpdatesHandler extends DefaultUpdatesHandler {
      * @param message Message to handle
      */
     private void onTLMessage(@NotNull TLMessage message) {
-        System.out.println(uniqueName + "onTLMessage#, from msg -> " + message.getMessage() +", fromId -> " + message.getFromId());
+        log(uniqueName,"onTLMessage#, from msg -> "+message.getMessage(),", fromId -> "+message.getFromId());
         if (message.hasFromId()) {
 //            kernelComm.performMarkAsRead(new User(kernelComm.getCurrentUserId(), kernelComm.), 0);
             switch (message.getFromId()){
                 case CHAT_WARS_ID:
-                    System.out.println(uniqueName + "onTLMessage#, CHAT_WARS_ID, from msg -> " + message.getMessage());
+                    log(uniqueName,"onTLMessage#, CHAT_WARS_ID, from msg -> " + message.getMessage());
                     specificStorage.putChatWars(message);
                     break;
             }
             switch (message.getToId().getId()){
                 case RED_ALERT_ID:
-                    System.out.println(uniqueName + "onTLMessage#, RED_ALERT_ID, to msg -> " + message.getMessage());
+                    log(uniqueName,"onTLMessage#, RED_ALERT_ID, to msg -> " + message.getMessage());
                     specificStorage.putRedAlert(message);
                     break;
                 case CHAT_WARS_ID:
                     specificStorage.putChatWars(message);
-                    System.out.println(uniqueName + "onTLMessage#, CHAT_WARS_ID, to msg -> " + message.getMessage());
+                    log(uniqueName,"onTLMessage#, CHAT_WARS_ID, to msg -> " + message.getMessage());
                     break;
             }
 //            final IUser user = databaseManager.getUserById(message.getFromId());

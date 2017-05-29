@@ -2,6 +2,7 @@ package com.apashnov.cwgram.cw;
 
 import com.apashnov.cwgram.client.UpdatesStorage.SpecificStorage;
 import com.apashnov.cwgram.client.model.User;
+import org.jetbrains.annotations.NotNull;
 import org.telegram.api.engine.RpcException;
 import org.telegram.api.keyboard.TLKeyboardButtonRow;
 import org.telegram.api.keyboard.button.TLAbsKeyboardButton;
@@ -14,6 +15,7 @@ import org.telegram.bot.structure.IUser;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.apashnov.cwgram.cw.CustomLogger.log;
 import static com.apashnov.cwgram.cw.CwConstants.BTN_RED_FLAG;
 import static com.apashnov.cwgram.cw.CwConstants.BTN_TEXT_ATACK;
 import static com.apashnov.cwgram.cw.CwConstants.BTN_TEXT_DEFENSE;
@@ -26,32 +28,32 @@ public class CwActionHelper {
     }
 
     public static void goToMainMenuThanRedDefThanGoingAttack(IKernelComm kernelComm, TLUser chatWarsBot, SpecificStorage specificStorage, String uniqueName) throws Exception {
-        kernelComm.sendMessage(convert(chatWarsBot), "/report");
-        System.out.println(uniqueName+"1_sent '/report'");
+        sendMessage(kernelComm,convert(chatWarsBot), "/report");
+        log(uniqueName,"1_sent '/report'");
         List<TLMessage> messagesCW = waitResponse(specificStorage, chatWarsBot, uniqueName );
-        System.out.println(uniqueName+"2_msgCW -> " + toReadable(messagesCW));
+        log(uniqueName,"2_msgCW -> " + toReadable(messagesCW));
 
-        kernelComm.sendMessage(convert(chatWarsBot), BTN_TEXT_DEFENSE);
-        System.out.println(uniqueName+"2_sent '"+BTN_TEXT_DEFENSE+"'");
+        sendMessage(kernelComm,convert(chatWarsBot), BTN_TEXT_DEFENSE);
+        log(uniqueName,"2_sent '"+BTN_TEXT_DEFENSE+"'");
         messagesCW = waitResponse(specificStorage, chatWarsBot, uniqueName);
-        System.out.println(uniqueName+"3_msgCW -> " + toReadable(messagesCW));
+        log(uniqueName,"3_msgCW -> " + toReadable(messagesCW));
 
         TLReplayKeyboardMarkup replyMarkup = (TLReplayKeyboardMarkup) (messagesCW.get(0)).getReplyMarkup();
-        System.out.println(uniqueName+"3_replyMarkup" + toReadable(replyMarkup));
+        log(uniqueName,"3_replyMarkup" + toReadable(replyMarkup));
         boolean hasBtnWithText = hasBtnWithText(replyMarkup, BTN_RED_FLAG);
 
         if(hasBtnWithText){
-            kernelComm.sendMessage(convert(chatWarsBot), BTN_RED_FLAG);
-            System.out.println(uniqueName+"2_sent '"+BTN_RED_FLAG+"'");
+            sendMessage(kernelComm,convert(chatWarsBot), BTN_RED_FLAG);
+            log(uniqueName,"2_sent '"+BTN_RED_FLAG+"'");
         }
         messagesCW = waitResponse(specificStorage, chatWarsBot, uniqueName);
-        System.out.println(uniqueName+"4_msgCW -> " + toReadable(messagesCW));
+        log(uniqueName,"4_msgCW -> " + toReadable(messagesCW));
 
-        kernelComm.sendMessage(convert(chatWarsBot), BTN_TEXT_ATACK);
-        System.out.println(uniqueName+"2_sent '"+BTN_TEXT_ATACK+"'");
+        sendMessage(kernelComm,convert(chatWarsBot), BTN_TEXT_ATACK);
+        log(uniqueName,"5_sent '"+BTN_TEXT_ATACK+"'");
     }
 
-    private static String toReadable(List<TLMessage> messagesCW) {
+    public static String toReadable(List<TLMessage> messagesCW) {
         return messagesCW.stream().map(m -> m.getMessage()).collect(Collectors.joining(";"));
     }
 
@@ -75,8 +77,8 @@ public class CwActionHelper {
         do {
             Thread.sleep(3000);
             chatWars = specificStorage.getChatWars();
-            System.out.println(uniqueName+"waitResponse#, msgs -> " + toReadable(chatWars));
-            System.out.println(uniqueName+"waitResponse#, condition -> " + (chatWars.isEmpty() || chatWars.get(0).getFromId() != chatWarsBot.getId()));
+            log(uniqueName,"waitResponse#, msgs -> " + toReadable(chatWars));
+            log(uniqueName,"waitResponse#, condition -> " + (chatWars.isEmpty() || chatWars.get(0).getFromId() != chatWarsBot.getId()));
         } while (chatWars.isEmpty() || chatWars.get(0).getFromId() != chatWarsBot.getId());
         return chatWars;
     }
@@ -95,9 +97,16 @@ public class CwActionHelper {
     }
 
     public static void sendFlagThanGoingAttack(String flag, IKernelComm kernelComm, TLUser chatWarsBot, SpecificStorage specificStorage, String uniqueName) throws Exception {
-        System.out.println(uniqueName+"sendFlagThanGoingAttack, flag -> " + flag);
-        kernelComm.sendMessage(convert(chatWarsBot), flag);
+        log(uniqueName,"sendFlagThanGoingAttack, flag -> " + flag);
+        sendMessage(kernelComm,convert(chatWarsBot), flag);
+        log(uniqueName, "sent flag-> " + flag);
         waitResponse(specificStorage, chatWarsBot, uniqueName);
-        kernelComm.sendMessage(convert(chatWarsBot), BTN_TEXT_ATACK);
+        sendMessage(kernelComm,convert(chatWarsBot), BTN_TEXT_ATACK);
+        log(uniqueName, "sent btn-> " + BTN_TEXT_ATACK);
+    }
+
+    public static void sendMessage(IKernelComm kernelComm, @NotNull IUser user, @NotNull String message) throws RpcException {
+        kernelComm.sendMessage(user, message);
+        kernelComm.performMarkAsRead(user, 0);
     }
 }

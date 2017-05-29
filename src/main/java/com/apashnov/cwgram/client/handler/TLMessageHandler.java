@@ -8,6 +8,9 @@ import org.telegram.bot.kernel.database.DatabaseManager;
 import org.telegram.bot.services.BotLogger;
 import org.telegram.bot.structure.IUser;
 
+import static com.apashnov.cwgram.cw.CustomLogger.log;
+
+
 /**
  * Created by apashnov on 15.05.2017.
  */
@@ -48,6 +51,7 @@ public class TLMessageHandler {
 
     private void onTLMessageForUser(TLMessage message) {
         System.out.println(message);
+        log(uniqueName, "msg ->" + message.getMessage());
         if (!message.isSent()) {
             final IUser user = databaseManager.getUserById(message.getFromId());
             if (user != null) {

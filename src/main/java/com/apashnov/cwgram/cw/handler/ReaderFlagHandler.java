@@ -15,6 +15,7 @@ import org.telegram.bot.kernel.IKernelComm;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
+import static com.apashnov.cwgram.cw.CustomLogger.log;
 import static com.apashnov.cwgram.cw.CwActionHelper.goToMainMenuThanRedDefThanGoingAttack;
 import static com.apashnov.cwgram.cw.CwActionHelper.sendFlagThanGoingAttack;
 import static com.apashnov.cwgram.cw.handler.GetterFlagHandler.notRegimeNoise;
@@ -44,7 +45,7 @@ public class ReaderFlagHandler implements CwHandler {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println(uniqueName + "started ReaderFlagHandler");
+                log(uniqueName,"started ReaderFlagHandler");
                 TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 99);
                 TLDialogs tlDialogs = null;
                 try {
@@ -57,21 +58,21 @@ public class ReaderFlagHandler implements CwHandler {
                 while (true) {
                     try {
                         waitUntilWaked(notifier, condition);
-                        System.out.println(uniqueName + " waked to read flag");
+                        log(uniqueName," waked to read flag");
 
                         goToMainMenuThanRedDefThanGoingAttack(kernelComm, chatWarsBot, specificStorage, uniqueName);
                         String currentFlag = CwConstants.BTN_RED_FLAG;
                         while (notRegimeNoise()) {
-                            System.out.println(uniqueName+"currentFlag -> " + currentFlag);
+                            log(uniqueName+"currentFlag -> " + currentFlag);
                             String flag;
                             if (WarriorKind.AGGRESSOR == warrior.getKind()) {
-                                System.out.println(uniqueName+" going to get atk flag");
+                                log(uniqueName+" going to get atk flag");
                                 flag = flagStorage.getAttack();
-                                System.out.println(uniqueName+" got atk flag -> " + flag);
+                                log(uniqueName+" got atk flag -> " + flag);
                             } else {
-                                System.out.println(uniqueName+" going to get def flag");
+                                log(uniqueName+" going to get def flag");
                                 flag = flagStorage.getDefend();
-                                System.out.println(uniqueName+" got def flag -> " + flag);
+                                log(uniqueName+" got def flag -> " + flag);
                             }
                             if (flag == null || flag == currentFlag) {
 //                                try {
@@ -81,7 +82,7 @@ public class ReaderFlagHandler implements CwHandler {
 //                                }
                             } else {
                                 currentFlag = flag;
-                                System.out.println(uniqueName+ "going to send flag -> " + currentFlag);
+                                log(uniqueName+ "going to send flag -> " + currentFlag);
                                 sendFlagThanGoingAttack(currentFlag, kernelComm, chatWarsBot, specificStorage, uniqueName);
 //                                try {
 //                                    Thread.sleep(3003);

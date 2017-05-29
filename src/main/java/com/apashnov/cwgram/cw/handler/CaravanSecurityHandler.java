@@ -25,6 +25,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 import static com.apashnov.cwgram.Constants.BTN_QUEST;
+import static com.apashnov.cwgram.cw.CustomLogger.log;
 import static com.apashnov.cwgram.cw.CwActionHelper.*;
 import static com.apashnov.cwgram.cw.handler.QuestHandler.findChatWarsUser;
 
@@ -61,12 +62,14 @@ public class CaravanSecurityHandler implements CwHandler {
                 while (true) {
                     try {
                         Thread.sleep(1 * 60 * 1000);
-                        System.out.println(uniqueName + " check caravan ");
+                        log(uniqueName," check caravan ");
                         List<TLMessage> chatWars = specificStorage.getChatWars();
+                        log(uniqueName, toReadable(chatWars));
                         for (TLMessage msgChatWars : chatWars) {
                             if(msgChatWars.getFromId() == chatWarsBot.getId()){
                                 if(msgChatWars.getMessage().contains("/go")){
-                                    kernelComm.sendMessage(convert(chatWarsBot), "/go");
+                                    sendMessage(kernelComm, convert(chatWarsBot), "/go");
+                                    log(uniqueName, "sent '/go'");
                                 }
                             }
                         }

@@ -20,6 +20,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 import static com.apashnov.cwgram.Constants.RED_ALERT_ID;
+import static com.apashnov.cwgram.cw.CustomLogger.log;
 import static com.apashnov.cwgram.cw.CwActionHelper.goToMainMenuThanRedDefThanGoingAttack;
 import static com.apashnov.cwgram.cw.CwActionHelper.sendFlagThanGoingAttack;
 
@@ -49,7 +50,7 @@ public class GetterFlagHandler implements CwHandler {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println(uniqueName + "started GetterFlagHandler");
+                log(uniqueName,"started GetterFlagHandler");
                 TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 100);
                 TLDialogs tlDialogs = null;
                 try {
@@ -65,25 +66,25 @@ public class GetterFlagHandler implements CwHandler {
                 while (true) {
                     try {
                         waitUntilWaked(notifier, condition);
-                        System.out.println(uniqueName + " waked to get flag");
+                        log(uniqueName," waked to get flag");
 
                         goToMainMenuThanRedDefThanGoingAttack(kernelComm, chatWarsBot, specificStorage, uniqueName);
                         String currentFlag = CwConstants.BTN_RED_FLAG;
                         while (notRegimeNoise()) {
 //                        while (true) {
-                            System.out.println(uniqueName + "currentFlag -> " + currentFlag);
-                            System.out.println(uniqueName + "going to solve flag");
+                            log(uniqueName,"currentFlag -> " + currentFlag);
+                            log(uniqueName,"going to solve flag");
                             findCommandsAndSolve(specificStorage);
-                            System.out.println(uniqueName + "solved flag");
+                            log(uniqueName,"solved flag");
                             String flag;
                             if (WarriorKind.AGGRESSOR == warrior.getKind()) {
-                                System.out.println(uniqueName + " going to get atk flag");
+                                log(uniqueName," going to get atk flag");
                                 flag = atcFlag;
-                                System.out.println(uniqueName + " got atk flag -> " + flag);
+                                log(uniqueName, " got atk flag -> " + flag);
                             } else {
-                                System.out.println(uniqueName + " going to get def flag");
+                                log(uniqueName," going to get def flag");
                                 flag = defFlag;
-                                System.out.println(uniqueName + " got def flag -> " + flag);
+                                log(uniqueName," got def flag -> " + flag);
                             }
                             if (flag == null || flag == currentFlag) {
                                 try {
@@ -94,7 +95,7 @@ public class GetterFlagHandler implements CwHandler {
                                 }
                             } else {
                                 currentFlag = flag;
-                                System.out.println(uniqueName + "going to send flag -> " + currentFlag);
+                                log(uniqueName,"going to send flag -> " + currentFlag);
                                 sendFlagThanGoingAttack(currentFlag, kernelComm, chatWarsBot, specificStorage, uniqueName);
                                 try {
                                     Thread.sleep(2075);
@@ -123,7 +124,7 @@ public class GetterFlagHandler implements CwHandler {
         boolean full = true;
         for (TLMessage message : messagesRedAlert) {
             String text = message.getMessage().trim();
-            System.out.println("findCommandsAndSolve#text -> " + text);
+            log(uniqueName, "findCommandsAndSolve#text -> " + text);
             if (!text.isEmpty()) {
                 switch (text.charAt(0)) {
                     case 'a':
@@ -162,7 +163,7 @@ public class GetterFlagHandler implements CwHandler {
     }
 
     private void solveFull(String text) {
-        System.out.println("solveFull#text -> " + text);
+        log(uniqueName,"solveFull#text -> " + text);
         String flag = solve(text);
         atcFlag = flag;
         defFlag = flag;
@@ -171,14 +172,14 @@ public class GetterFlagHandler implements CwHandler {
     }
 
     private void solveDef(String text) {
-        System.out.println("solveDef#text -> " + text);
+        log(uniqueName,"solveDef#text -> " + text);
         String flag = solve(text);
         defFlag = flag;
         flagStorage.setDefend(flag);
     }
 
     private void solveAtc(String text) {
-        System.out.println("solveAtc#text -> " + text);
+        log(uniqueName,"solveAtc#text -> " + text);
         String flag = solve(text);
         atcFlag = flag;
         flagStorage.setAttack(flag);
@@ -186,7 +187,7 @@ public class GetterFlagHandler implements CwHandler {
 
     private String solve(String text) {
         String t = text.toLowerCase();
-        System.out.println("solve#text -> " + text);
+        log(uniqueName,"solve#text -> " + text);
         String result = CwConstants.BTN_RED_FLAG;
         if (t.contains("+б")) {
             result = CwConstants.BTN_WHITE_FLAG;
@@ -207,7 +208,7 @@ public class GetterFlagHandler implements CwHandler {
         } else if (t.contains("+л")) {
             result = CwConstants.BTN_FOREST_FLAG;
         }
-        System.out.println("solve#result -> " + result);
+        log(uniqueName,"solve#result -> " + result);
         return result;
     }
 
