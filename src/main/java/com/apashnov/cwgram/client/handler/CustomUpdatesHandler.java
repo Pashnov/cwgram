@@ -112,29 +112,29 @@ public class CustomUpdatesHandler extends DefaultUpdatesHandler {
     private void onTLMessage(@NotNull TLMessage message) {
 //        log(uniqueName,"onTLMessage#, from msg -> "+message.getMessage().replace("\n", ""),", fromId -> "+message.getFromId());
 
-        if (message.hasFromId() && false) { // while state in static is stored
-//            kernelComm.performMarkAsRead(new User(kernelComm.getCurrentUserId(), kernelComm.), 0);
-            switch (message.getFromId()){
-                case CHAT_WARS_ID:
-                    log(uniqueName,"onTLMessage#, CHAT_WARS_ID, from msg -> " + message.getMessage().replace("\n", ""));
-                    specificStorage.putChatWars(message);
-                    break;
-            }
-            switch (message.getToId().getId()){
-                case RED_ALERT_ID:
-                    log(uniqueName,"onTLMessage#, RED_ALERT_ID, to msg -> " + message.getMessage().replace("\n", ""));
-                    specificStorage.putRedAlert(message);
-                    break;
-                case CHAT_WARS_ID:
-                    specificStorage.putChatWars(message);
-                    log(uniqueName,"onTLMessage#, CHAT_WARS_ID, to msg -> " + message.getMessage().replace("\n", ""));
-                    break;
-            }
-//            final IUser user = databaseManager.getUserById(message.getFromId());
-//            if (user != null) {
-//                this.tlMessageHandler.onTLMessage(message);
+//        if (message.hasFromId() && false) { // while state in static is stored
+////            kernelComm.performMarkAsRead(new User(kernelComm.getCurrentUserId(), kernelComm.), 0);
+//            switch (message.getFromId()){
+//                case CHAT_WARS_ID:
+//                    log(uniqueName,"onTLMessage#, CHAT_WARS_ID, from msg -> " + message.getMessage().replace("\n", ""));
+//                    specificStorage.putChatWars(message);
+//                    break;
 //            }
-        }
+//            switch (message.getToId().getId()){
+//                case RED_ALERT_ID:
+//                    log(uniqueName,"onTLMessage#, RED_ALERT_ID, to msg -> " + message.getMessage().replace("\n", ""));
+//                    specificStorage.putRedAlert(message);
+//                    break;
+//                case CHAT_WARS_ID:
+//                    specificStorage.putChatWars(message);
+//                    log(uniqueName,"onTLMessage#, CHAT_WARS_ID, to msg -> " + message.getMessage().replace("\n", ""));
+//                    break;
+//            }
+////            final IUser user = databaseManager.getUserById(message.getFromId());
+////            if (user != null) {
+////                this.tlMessageHandler.onTLMessage(message);
+////            }
+//        }
     }
 
 }

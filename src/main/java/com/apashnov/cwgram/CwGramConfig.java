@@ -58,6 +58,8 @@ public class CwGramConfig {
 
         boolean isFirst = true;
         for (Container container : containers) {
+            container.addHandler(applicationContext.getBean(CustomDifferenciesListener.class));
+
             if(isFirst){
                 container.addHandler(applicationContext.getBean(GetterFlagHandler.class));
                 isFirst = false;
@@ -72,6 +74,7 @@ public class CwGramConfig {
             if(caravanSecurity){
                 container.addHandler(applicationContext.getBean(CaravanSecurityHandler.class));
             }
+
         }
 
         return containers;

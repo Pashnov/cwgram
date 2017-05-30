@@ -105,7 +105,7 @@ public class Container {
             if (status == LoginStatus.ALREADYLOGGED) {
                 log(getUniqueName(), " logged in successfully");
                 kernelComm = kernel.getKernelComm();
-                kernel.startBot();  // aka turn on getDifAllTime;
+                //kernel.startBot();  // aka turn on getDifAllTime;
             } else {
                 throw new RuntimeException("Failed to log in: " + status + ", for  -> " + phoneNumber);
             }
