@@ -112,7 +112,7 @@ public class CustomUpdatesHandler extends DefaultUpdatesHandler {
     private void onTLMessage(@NotNull TLMessage message) {
 //        log(uniqueName,"onTLMessage#, from msg -> "+message.getMessage().replace("\n", ""),", fromId -> "+message.getFromId());
 
-        if (message.hasFromId()) {
+        if (message.hasFromId() && false) { // while state in static is stored
 //            kernelComm.performMarkAsRead(new User(kernelComm.getCurrentUserId(), kernelComm.), 0);
             switch (message.getFromId()){
                 case CHAT_WARS_ID:

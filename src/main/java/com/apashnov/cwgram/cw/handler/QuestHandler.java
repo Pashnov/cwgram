@@ -51,7 +51,6 @@ public class QuestHandler implements CwHandler {
     private List<String> nightQuests;
     private boolean nightQuestsAllowed;
 
-
     @Override
     public void handle(Warrior warrior, IKernelComm kernelComm, String uniqueName, String phoneNumber) {
         this.uniqueName = uniqueName;

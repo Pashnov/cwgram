@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 //java -jar -Dbase.path="C:\my_projects\cwgram\build\libs" cwgram-0.0.1-SNAPSHOT.jar
+//java -jar -Dbase.path="/home/apashnov/git/github/cwgram/test" cwgram-0.0.1-SNAPSHOT.jar
 
 @Configuration
 @EnableScheduling
