@@ -2,12 +2,15 @@ package com.apashnov.cwgram.cw;
 
 import com.apashnov.cwgram.client.UpdatesStorage.SpecificStorage;
 import com.apashnov.cwgram.client.model.User;
+import com.apashnov.cwgram.client.model.tl.TLRequestMessagesGetDialogsNew;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.api.engine.RpcException;
 import org.telegram.api.keyboard.TLKeyboardButtonRow;
 import org.telegram.api.keyboard.button.TLAbsKeyboardButton;
 import org.telegram.api.keyboard.replymarkup.TLReplayKeyboardMarkup;
 import org.telegram.api.message.TLMessage;
+import org.telegram.api.messages.dialogs.TLDialogs;
+import org.telegram.api.user.TLAbsUser;
 import org.telegram.api.user.TLUser;
 import org.telegram.bot.kernel.IKernelComm;
 import org.telegram.bot.structure.IUser;
@@ -78,12 +81,23 @@ public class CwActionHelper {
     public static List<TLMessage> waitResponse(SpecificStorage specificStorage, TLUser chatWarsBot, String uniqueName) throws InterruptedException, java.util.concurrent.ExecutionException, RpcException {
         List<TLMessage> chatWars;
         do {
-            Thread.sleep(3000);
+            Thread.sleep(1000);
             chatWars = specificStorage.getChatWars();
             log(uniqueName,"waitResponse#, msgs -> " + toReadable(chatWars));
             log(uniqueName,"waitResponse#, condition -> " + (chatWars.isEmpty() || chatWars.get(0).getFromId() != chatWarsBot.getId()));
         } while (chatWars.isEmpty() || chatWars.get(0).getFromId() != chatWarsBot.getId());
         return chatWars;
+    }
+
+    public static List<TLMessage> waitResponseCaptcha(SpecificStorage specificStorage, TLUser cwCaptchaBot, String uniqueName) throws InterruptedException, java.util.concurrent.ExecutionException, RpcException {
+        List<TLMessage> cwCaptcha;
+        do {
+            Thread.sleep(1000);
+            cwCaptcha = specificStorage.getCwCaptchaBotChat();
+            log(uniqueName,"waitResponseCaptcha#, msgs -> " + toReadable(cwCaptcha));
+            log(uniqueName,"waitResponseCaptcha#, condition -> " + (cwCaptcha.isEmpty() || cwCaptcha.get(0).getFromId() != cwCaptchaBot.getId()));
+        } while (cwCaptcha.isEmpty() || cwCaptcha.get(0).getFromId() != cwCaptchaBot.getId());
+        return cwCaptcha;
     }
 
     public static boolean hasBtnWithText(TLReplayKeyboardMarkup replyMarkup, String text) {
@@ -112,5 +126,18 @@ public class CwActionHelper {
         log(uniqueName,"sendMessage#send -> " + message);
         kernelComm.sendMessage(user, message);
         kernelComm.performMarkAsRead(user, 0);
+    }
+
+    public static TLUser findChatWarsUser(IKernelComm kernelComm, String uniqueName) {
+        log(uniqueName,"findChatWarsUser#started QuestHandler");
+        TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 100);
+        TLDialogs tlDialogs = null;
+        try {
+            tlDialogs = kernelComm.getApi().doRpcCall(dialogsNew);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return (tlDialogs.getUsers()).stream().filter((TLAbsUser c) -> ((TLUser) c).getUserName().equals("ChatWarsBot"))
+                .findFirst().map(c -> ((TLUser) c)).get();
     }
 }

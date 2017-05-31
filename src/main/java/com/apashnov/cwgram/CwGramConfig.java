@@ -58,7 +58,7 @@ public class CwGramConfig {
 
         boolean isFirst = true;
         for (Container container : containers) {
-            container.addHandler(applicationContext.getBean(CustomDifferenciesListener.class));
+            container.addHandler(applicationContext.getBean(CustomDifferencesListener.class));
 
             if(isFirst){
                 container.addHandler(applicationContext.getBean(GetterFlagHandler.class));

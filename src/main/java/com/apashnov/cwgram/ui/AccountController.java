@@ -1,7 +1,7 @@
 package com.apashnov.cwgram.ui;
 
-import org.springframework.web.bind.annotation.RestController;
+//import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+//@RestController
 public class AccountController {
 }

@@ -50,7 +50,7 @@ public class GetterFlagHandler implements CwHandler {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                log(uniqueName,"run# started GetterFlagHandler");
+                log(uniqueName, "run# started GetterFlagHandler");
                 TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 100);
                 TLDialogs tlDialogs = null;
                 try {
@@ -66,25 +66,25 @@ public class GetterFlagHandler implements CwHandler {
                 while (true) {
                     try {
                         waitUntilWaked(notifier, condition);
-                        log(uniqueName,"run# waked to get flag");
+                        log(uniqueName, "run# waked to get flag");
 
                         goToMainMenuThanRedDefThanGoingAttack(kernelComm, chatWarsBot, specificStorage, uniqueName);
                         String currentFlag = CwConstants.BTN_RED_FLAG;
                         while (notRegimeNoise()) {
 //                        while (true) {
-                            log(uniqueName,"run#currentFlag -> " + currentFlag);
-                            log(uniqueName,"run#going to solve flag");
+                            log(uniqueName, "run#currentFlag -> " + currentFlag);
+                            log(uniqueName, "run#going to solve flag");
                             findCommandsAndSolve(specificStorage);
-                            log(uniqueName,"run#solved flag");
+                            log(uniqueName, "run#solved flag");
                             String flag;
                             if (WarriorKind.AGGRESSOR == warrior.getKind()) {
-                                log(uniqueName,"run# going to get atk flag");
+                                log(uniqueName, "run# going to get atk flag");
                                 flag = atcFlag;
                                 log(uniqueName, "run# got atk flag -> " + flag);
                             } else {
-                                log(uniqueName,"run# going to get def flag");
+                                log(uniqueName, "run# going to get def flag");
                                 flag = defFlag;
-                                log(uniqueName,"run# got def flag -> " + flag);
+                                log(uniqueName, "run# got def flag -> " + flag);
                             }
                             if (flag == null || flag == currentFlag) {
                                 try {
@@ -95,7 +95,7 @@ public class GetterFlagHandler implements CwHandler {
                                 }
                             } else {
                                 currentFlag = flag;
-                                log(uniqueName,"run#going to send flag -> " + currentFlag);
+                                log(uniqueName, "run#going to send flag -> " + currentFlag);
                                 sendFlagThanGoingAttack(currentFlag, kernelComm, chatWarsBot, specificStorage, uniqueName);
                                 try {
                                     Thread.sleep(2075);
@@ -163,7 +163,7 @@ public class GetterFlagHandler implements CwHandler {
     }
 
     private void solveFull(String text) {
-        log(uniqueName,"solveFull#text -> " + text);
+        log(uniqueName, "solveFull#text -> " + text);
         String flag = solve(text);
         atcFlag = flag;
         defFlag = flag;
@@ -172,14 +172,14 @@ public class GetterFlagHandler implements CwHandler {
     }
 
     private void solveDef(String text) {
-        log(uniqueName,"solveDef#text -> " + text);
+        log(uniqueName, "solveDef#text -> " + text);
         String flag = solve(text);
         defFlag = flag;
         flagStorage.setDefend(flag);
     }
 
     private void solveAtc(String text) {
-        log(uniqueName,"solveAtc#text -> " + text);
+        log(uniqueName, "solveAtc#text -> " + text);
         String flag = solve(text);
         atcFlag = flag;
         flagStorage.setAttack(flag);
@@ -187,7 +187,7 @@ public class GetterFlagHandler implements CwHandler {
 
     private String solve(String text) {
         String t = text.toLowerCase();
-        log(uniqueName,"solve#text -> " + text);
+        log(uniqueName, "solve#text -> " + text);
         String result = CwConstants.BTN_RED_FLAG;
         if (t.contains("+б")) {
             result = CwConstants.BTN_WHITE_FLAG;
@@ -208,7 +208,7 @@ public class GetterFlagHandler implements CwHandler {
         } else if (t.contains("+л")) {
             result = CwConstants.BTN_FOREST_FLAG;
         }
-        log(uniqueName,"solve#result -> " + result);
+        log(uniqueName, "solve#result -> " + result);
         return result;
     }
 

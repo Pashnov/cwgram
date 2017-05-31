@@ -28,8 +28,9 @@ repositories {
 
 dependencies {
 	compile('org.springframework.retry:spring-retry')
-	compile('org.springframework.boot:spring-boot-starter-web')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+	compile('org.springframework.boot:spring-boot-starter')
+//	compile('org.springframework.boot:spring-boot-starter-web')
+//	testCompile('org.springframework.boot:spring-boot-starter-test')
 
 	// https://mvnrepository.com/artifact/org.telegram/telegramapi
 	compile group: 'org.telegram', name: 'telegramapi', version: '66.0'

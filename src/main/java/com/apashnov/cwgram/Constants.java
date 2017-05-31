@@ -12,6 +12,7 @@ public class Constants {
 
     public static final int CHAT_WARS_ID = 265204902;
     public static final int RED_ALERT_ID = 1112569524;
+    public static final int CW_CAPTCHA_BOT_ID = 313998026;
 
     //keys
     public static final String KEY_IS_DEFENDER = "cw.defender";
