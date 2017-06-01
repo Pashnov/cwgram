@@ -34,13 +34,13 @@ public class ChatsHandler implements IChatsHandler {
         if (chat instanceof TLChannel) {
             if(!((TLChannel) chat).getTitle().equals("Chat Wars Marketplace")
                     && !((TLChannel) chat).getTitle().equals("RedAlert Legion")){
-                System.out.println(chat); // can be get channel aka group - title =  RedAlert Legion
+//                System.out.println(chat); // can be get channel aka group - title =  RedAlert Legion
             }
 //            onChannel((TLChannel) chat);
         } else if (chat instanceof TLChannelForbidden) {
 //            onChannelForbidden((TLChannelForbidden) chat);
         } else if (chat instanceof TLChat) {
-            System.out.println(chat);
+//            System.out.println(chat);
             onChat((TLChat) chat);
         } else if (chat instanceof TLChatForbidden) {
             onChatForbidden((TLChatForbidden) chat);

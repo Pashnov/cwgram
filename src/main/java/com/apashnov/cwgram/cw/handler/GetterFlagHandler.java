@@ -50,7 +50,7 @@ public class GetterFlagHandler implements CwHandler {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                log(uniqueName, "run# started GetterFlagHandler");
+                log(uniqueName, "GetterFlagHandler# started ");
                 TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 100);
                 TLDialogs tlDialogs = null;
                 try {
@@ -66,36 +66,36 @@ public class GetterFlagHandler implements CwHandler {
                 while (true) {
                     try {
                         waitUntilWaked(notifier, condition);
-                        log(uniqueName, "run# waked to get flag");
+                        log(uniqueName, "GetterFlagHandler# waked to get flag");
 
                         goToMainMenuThanRedDefThanGoingAttack(kernelComm, chatWarsBot, specificStorage, uniqueName);
                         String currentFlag = CwConstants.BTN_RED_FLAG;
                         while (notRegimeNoise()) {
 //                        while (true) {
-                            log(uniqueName, "run#currentFlag -> " + currentFlag);
-                            log(uniqueName, "run#going to solve flag");
+                            log(uniqueName, "GetterFlagHandler#currentFlag -> " + currentFlag);
+                            log(uniqueName, "GetterFlagHandler#going to solve flag");
                             findCommandsAndSolve(specificStorage);
-                            log(uniqueName, "run#solved flag");
+                            log(uniqueName, "GetterFlagHandler#solved flag");
                             String flag;
                             if (WarriorKind.AGGRESSOR == warrior.getKind()) {
-                                log(uniqueName, "run# going to get atk flag");
+                                log(uniqueName, "GetterFlagHandler# going to get atk flag");
                                 flag = atcFlag;
-                                log(uniqueName, "run# got atk flag -> " + flag);
+                                log(uniqueName, "GetterFlagHandler# got atk flag -> " + flag);
                             } else {
-                                log(uniqueName, "run# going to get def flag");
+                                log(uniqueName, "GetterFlagHandler# going to get def flag");
                                 flag = defFlag;
-                                log(uniqueName, "run# got def flag -> " + flag);
+                                log(uniqueName, "GetterFlagHandler# got def flag -> " + flag);
                             }
                             if (flag == null || flag == currentFlag) {
                                 try {
-                                    Thread.sleep(3075);
+                                    Thread.sleep(1500);
                                     continue;
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
                             } else {
                                 currentFlag = flag;
-                                log(uniqueName, "run#going to send flag -> " + currentFlag);
+                                log(uniqueName, "GetterFlagHandler#going to send flag -> " + currentFlag);
                                 sendFlagThanGoingAttack(currentFlag, kernelComm, chatWarsBot, specificStorage, uniqueName);
                                 try {
                                     Thread.sleep(2075);
@@ -212,7 +212,6 @@ public class GetterFlagHandler implements CwHandler {
         return result;
     }
 
-
     public static boolean notRegimeNoise() {
         LocalTime now = LocalTime.now();
         int hour = now.getHour();
@@ -228,15 +227,10 @@ public class GetterFlagHandler implements CwHandler {
         return true;
     }
 
-    private void goIntoDefense(Warrior warrior, IKernelComm kernelComm) {
-        //todo::
-//        kernelComm.sendMessage(user, message);
-//        kernelComm.performMarkAsRead(user, 0);
-    }
-
     @Autowired
     public void setNotifier(Notifier notifier) {
         this.notifier = notifier.getLock(this.getClass());
         this.condition = notifier.getCondition(this.getClass());
     }
+
 }

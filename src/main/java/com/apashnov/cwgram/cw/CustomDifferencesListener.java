@@ -27,8 +27,6 @@ import static com.apashnov.cwgram.cw.CustomLogger.log;
 @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CustomDifferencesListener implements CwHandler {
 
-    private SpecificStorage storage;
-
     @Autowired
     UpdatesStorage updatesStorage;
 
@@ -57,17 +55,17 @@ public class CustomDifferencesListener implements CwHandler {
 
                 while (true) {
                     try {
-                        log(uniqueName, "getDiff");
+//                        log(uniqueName, "getDiff");
                         TLRequestUpdatesGetState state = new TLRequestUpdatesGetState();
                         TLUpdatesState tlUpdatesState = kernelComm.doRpcCallSync(state);
-                        System.out.println("debug point 1, tlUpdatesState = " + tlUpdatesState);
-                        log(uniqueName, "debug point, tlUpdatesState = " + tlUpdatesState);
+//                        System.out.println("debug point 1, tlUpdatesState = " + tlUpdatesState);
+//                        log(uniqueName, "debug point, tlUpdatesState = " + tlUpdatesState);
                         int date = tlUpdatesState.getDate();
                         int pts = tlUpdatesState.getPts();
                         int qts = tlUpdatesState.getQts();
                         int seq = tlUpdatesState.getSeq();
-                        log(uniqueName, "date=", date, "pts=", pts, "qts=", qts, "seq=", seq);
-                        log(uniqueName, "old =", CustomDifferencesListener.this.date, "pts=", CustomDifferencesListener.this.pts, "qts=", CustomDifferencesListener.this.qts, "seq=", CustomDifferencesListener.this.seq);
+//                        log(uniqueName, "date=", date, "pts=", pts, "qts=", qts, "seq=", seq);
+//                        log(uniqueName, "old =", CustomDifferencesListener.this.date, "pts=", CustomDifferencesListener.this.pts, "qts=", CustomDifferencesListener.this.qts, "seq=", CustomDifferencesListener.this.seq);
 //                        System.out.println("date old, new " + CustomDifferencesListener.this.date + ", " +date);
 //                        System.out.println("pts old, new " + CustomDifferencesListener.this.pts + ", " +pts);
 //                        System.out.println("qts old, new " + CustomDifferencesListener.this.qts + ", " +qts);
@@ -89,7 +87,7 @@ public class CustomDifferencesListener implements CwHandler {
 //                        diff.setQts(0);
 //                            diff.setPtsTotalLimit(100);
                             TLAbsDifference tlAbsDifference = kernelComm.doRpcCallSync(diff);
-                            log(uniqueName, "debug point 2", tlAbsDifference);
+//                            log(uniqueName, "debug point 2", tlAbsDifference);
                             if (tlAbsDifference instanceof TLDifference) {
                                 TLDifference tlDifference = (TLDifference) tlAbsDifference;
                                 TLUpdatesState state1 = tlDifference.getState();
@@ -123,8 +121,9 @@ public class CustomDifferencesListener implements CwHandler {
 //                            channelDiff.setLimit(100);
 
                         }
-                        Thread.sleep(1000);
+                        Thread.sleep(777);
                     } catch (Exception e) {
+                        log(uniqueName, "e = " + e);
                         e.printStackTrace();
                         try {
                             Thread.sleep(200);

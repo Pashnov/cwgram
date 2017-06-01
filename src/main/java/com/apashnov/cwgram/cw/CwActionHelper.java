@@ -81,7 +81,7 @@ public class CwActionHelper {
     public static List<TLMessage> waitResponse(SpecificStorage specificStorage, TLUser chatWarsBot, String uniqueName) throws InterruptedException, java.util.concurrent.ExecutionException, RpcException {
         List<TLMessage> chatWars;
         do {
-            Thread.sleep(1000);
+            Thread.sleep(3000);
             chatWars = specificStorage.getChatWars();
             log(uniqueName,"waitResponse#, msgs -> " + toReadable(chatWars));
             log(uniqueName,"waitResponse#, condition -> " + (chatWars.isEmpty() || chatWars.get(0).getFromId() != chatWarsBot.getId()));
@@ -92,7 +92,7 @@ public class CwActionHelper {
     public static List<TLMessage> waitResponseCaptcha(SpecificStorage specificStorage, TLUser cwCaptchaBot, String uniqueName) throws InterruptedException, java.util.concurrent.ExecutionException, RpcException {
         List<TLMessage> cwCaptcha;
         do {
-            Thread.sleep(1000);
+            Thread.sleep(3000);
             cwCaptcha = specificStorage.getCwCaptchaBotChat();
             log(uniqueName,"waitResponseCaptcha#, msgs -> " + toReadable(cwCaptcha));
             log(uniqueName,"waitResponseCaptcha#, condition -> " + (cwCaptcha.isEmpty() || cwCaptcha.get(0).getFromId() != cwCaptchaBot.getId()));

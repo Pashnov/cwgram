@@ -22,31 +22,33 @@ public class CustomLogger {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    LogObject logObject = stack.take();
-                    String uniqueName = logObject.uniqueName;
-                    synchronized (uniqueName) {
-                        try {
-                            BufferedWriter out = userResource.get(uniqueName);
-                            if (out == null) {
-                                out = new BufferedWriter(new FileWriter(basePath + File.separator + ".." + File.separator + LOG_PATH + File.separator + uniqueName + ".log"));
-                                userResource.put(uniqueName, out);
+                while (true) {
+                    try {
+                        LogObject logObject = stack.take();
+                        String uniqueName = logObject.uniqueName;
+                        synchronized (uniqueName) {
+                            try {
+                                BufferedWriter out = userResource.get(uniqueName);
+                                if (out == null) {
+                                    out = new BufferedWriter(new FileWriter(basePath + File.separator + ".." + File.separator + LOG_PATH + File.separator + uniqueName + ".log"));
+                                    userResource.put(uniqueName, out);
+                                }
+                                out.newLine();
+                                out.append(LocalDateTime.now() + "-");
+                                out.append(uniqueName + ", ");
+                                for (Object arg : logObject.args) {
+                                    out.append(String.valueOf(arg) + ", ");
+                                }
+                                out.append(";");
+                                out.flush();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                throw new RuntimeException("logger failed, uniqueName ->" + uniqueName, e);
                             }
-                            out.newLine();
-                            out.append(LocalDateTime.now() + "-");
-                            out.append(uniqueName + ", ");
-                            for (Object arg : logObject.args) {
-                                out.append(String.valueOf(arg) + ", ");
-                            }
-                            out.append(";");
-                            out.flush();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            throw new RuntimeException("logger failed, uniqueName ->" + uniqueName, e);
                         }
+                    } catch (Exception e) {
+                        //noop
                     }
-                } catch (Exception e) {
-                    //noop
                 }
             }
         }).start();

@@ -57,7 +57,7 @@ public class Container {
         try (FileReader reader = new FileReader(path.resolve(LOCAL_FILE_NAME).toString())) {
             properties.load(reader);
         } catch (IOException e) {
-            System.out.println(getUniqueName() + "not successfully load " + LOCAL_FILE_NAME);
+//            System.out.println(getUniqueName() + "not successfully load " + LOCAL_FILE_NAME);
             log(getUniqueName(), "not successfully load " + LOCAL_FILE_NAME);
         }
         this.properties = properties;

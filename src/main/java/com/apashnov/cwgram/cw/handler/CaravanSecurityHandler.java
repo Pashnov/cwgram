@@ -56,14 +56,16 @@ public class CaravanSecurityHandler implements CwHandler {
                         log(uniqueName, "run# check caravan ");
                         List<TLMessage> chatWars = specificStorage.getChatWars();
                         log(uniqueName, "run#chatWars ->" + toReadable(chatWars));
-                        for (TLMessage msgChatWars : chatWars) {
-                            if (msgChatWars.getFromId() == chatWarsBot.getId()) {
-                                if (msgChatWars.getMessage().contains("/go")) {
+//                        for (TLMessage msgChatWars : chatWars) {
+                        if(!chatWars.isEmpty()){
+                            if (chatWars.get(0).getFromId() == chatWarsBot.getId()) {
+                                if (chatWars.get(0).getMessage().contains("/go")) {
                                     sendMessage(uniqueName, kernelComm, convert(chatWarsBot), "/go");
                                     log(uniqueName, "run#sent '/go'");
                                 }
                             }
                         }
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
