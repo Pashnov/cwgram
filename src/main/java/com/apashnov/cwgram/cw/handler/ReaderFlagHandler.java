@@ -16,6 +16,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 import static com.apashnov.cwgram.cw.CustomLogger.log;
+import static com.apashnov.cwgram.cw.CwActionHelper.findChatWarsUser;
 import static com.apashnov.cwgram.cw.CwActionHelper.goToMainMenuThanRedDefThanGoingAttack;
 import static com.apashnov.cwgram.cw.CwActionHelper.sendFlagThanGoingAttack;
 import static com.apashnov.cwgram.cw.handler.GetterFlagHandler.notRegimeNoise;
@@ -46,15 +47,8 @@ public class ReaderFlagHandler implements CwHandler {
             @Override
             public void run() {
                 log(uniqueName, "run#started ReaderFlagHandler");
-                TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 99);
-                TLDialogs tlDialogs = null;
-                try {
-                    tlDialogs = kernelComm.getApi().doRpcCall(dialogsNew);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                chatWarsBot = (tlDialogs.getUsers()).stream().filter((TLAbsUser c) -> ((TLUser) c).getUserName().equals("ChatWarsBot"))
-                        .findFirst().map(c -> ((TLUser) c)).get();
+                chatWarsBot = findChatWarsUser(kernelComm, uniqueName);
+
                 while (true) {
                     try {
                         waitUntilWaked(notifier, condition);
@@ -97,14 +91,6 @@ public class ReaderFlagHandler implements CwHandler {
                 }
             }
         }).start();
-    }
-
-    private void sendFlag(String currentFlag, IKernelComm kernelComm) {
-        //todo::
-    }
-
-    private void goIntoDefense(Warrior warrior, IKernelComm kernelComm) {
-        //todo::
     }
 
     @Autowired

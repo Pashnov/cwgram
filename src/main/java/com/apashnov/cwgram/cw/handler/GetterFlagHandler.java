@@ -5,6 +5,8 @@ import com.apashnov.cwgram.client.UpdatesStorage.SpecificStorage;
 import com.apashnov.cwgram.client.model.tl.TLRequestMessagesGetDialogsNew;
 import com.apashnov.cwgram.cw.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.telegram.api.chat.TLAbsChat;
 import org.telegram.api.chat.channel.TLChannel;
@@ -21,10 +23,10 @@ import java.util.concurrent.locks.Lock;
 
 import static com.apashnov.cwgram.Constants.RED_ALERT_ID;
 import static com.apashnov.cwgram.cw.CustomLogger.log;
-import static com.apashnov.cwgram.cw.CwActionHelper.goToMainMenuThanRedDefThanGoingAttack;
-import static com.apashnov.cwgram.cw.CwActionHelper.sendFlagThanGoingAttack;
+import static com.apashnov.cwgram.cw.CwActionHelper.*;
 
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class GetterFlagHandler implements CwHandler {
 
     @Autowired
@@ -51,13 +53,15 @@ public class GetterFlagHandler implements CwHandler {
             @Override
             public void run() {
                 log(uniqueName, "GetterFlagHandler# started ");
-                TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 100);
+                TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 99);
                 TLDialogs tlDialogs = null;
-                try {
-                    tlDialogs = kernelComm.getApi().doRpcCall(dialogsNew);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                do {
+                    try {
+                        tlDialogs = kernelComm.getApi().doRpcCall(dialogsNew);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } while (tlDialogs == null);
                 TLAbsChat redAlertLegion = tlDialogs.getChats().stream().filter(c -> c.getId() == RED_ALERT_ID).findFirst().get();
                 redAlertAccessHash = ((TLChannel) redAlertLegion).getAccessHash();
                 chatWarsBot = (tlDialogs.getUsers()).stream().filter((TLAbsUser c) -> ((TLUser) c).getUserName().equals("ChatWarsBot"))
@@ -122,6 +126,7 @@ public class GetterFlagHandler implements CwHandler {
         boolean atc = true;
         boolean def = true;
         boolean full = true;
+        log(uniqueName, "findCommandsAndSolve#RedAlertMsgs =" + toReadable(messagesRedAlert));
         for (TLMessage message : messagesRedAlert) {
             String text = message.getMessage().trim();
             log(uniqueName, "findCommandsAndSolve#text -> " + text);

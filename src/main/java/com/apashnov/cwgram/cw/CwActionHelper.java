@@ -10,6 +10,7 @@ import org.telegram.api.keyboard.button.TLAbsKeyboardButton;
 import org.telegram.api.keyboard.replymarkup.TLReplayKeyboardMarkup;
 import org.telegram.api.message.TLMessage;
 import org.telegram.api.messages.dialogs.TLDialogs;
+import org.telegram.api.peer.TLPeerChat;
 import org.telegram.api.user.TLAbsUser;
 import org.telegram.api.user.TLUser;
 import org.telegram.bot.kernel.IKernelComm;
@@ -18,10 +19,10 @@ import org.telegram.bot.structure.IUser;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.apashnov.cwgram.Constants.CHAT_WARS_ID;
+import static com.apashnov.cwgram.Constants.CW_CAPTCHA_BOT_ID;
 import static com.apashnov.cwgram.cw.CustomLogger.log;
-import static com.apashnov.cwgram.cw.CwConstants.BTN_RED_FLAG;
-import static com.apashnov.cwgram.cw.CwConstants.BTN_TEXT_ATACK;
-import static com.apashnov.cwgram.cw.CwConstants.BTN_TEXT_DEFENSE;
+import static com.apashnov.cwgram.cw.CwConstants.*;
 
 public class CwActionHelper {
 
@@ -31,31 +32,31 @@ public class CwActionHelper {
     }
 
     public static void goToMainMenuThanRedDefThanGoingAttack(IKernelComm kernelComm, TLUser chatWarsBot, SpecificStorage specificStorage, String uniqueName) throws Exception {
-        log(uniqueName," in goToMainMenuThanRedDefThanGoingAttack");
-        sendMessage(uniqueName, kernelComm,convert(chatWarsBot), "/report");
-        log(uniqueName,"1_sent '/report'");
-        List<TLMessage> messagesCW = waitResponse(specificStorage, chatWarsBot, uniqueName );
-        log(uniqueName,"2_msgCW -> " + toReadable(messagesCW));
+        log(uniqueName, " in goToMainMenuThanRedDefThanGoingAttack");
+        sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), "/report", specificStorage);
+        log(uniqueName, "1_sent '/report'");
+        List<TLMessage> messagesCW = waitResponse(specificStorage, chatWarsBot, uniqueName);
+        log(uniqueName, "2_msgCW -> " + toReadable(messagesCW));
 
-        sendMessage(uniqueName, kernelComm,convert(chatWarsBot), BTN_TEXT_DEFENSE);
-        log(uniqueName,"2_sent '"+BTN_TEXT_DEFENSE+"'");
+        sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), BTN_TEXT_DEFENSE, specificStorage);
+        log(uniqueName, "2_sent '" + BTN_TEXT_DEFENSE + "'");
         messagesCW = waitResponse(specificStorage, chatWarsBot, uniqueName);
-        log(uniqueName,"3_msgCW -> " + toReadable(messagesCW));
+        log(uniqueName, "3_msgCW -> " + toReadable(messagesCW));
 
         TLReplayKeyboardMarkup replyMarkup = (TLReplayKeyboardMarkup) (messagesCW.get(0)).getReplyMarkup();
-        log(uniqueName,"3_replyMarkup" + toReadable(replyMarkup));
+        log(uniqueName, "3_replyMarkup" + toReadable(replyMarkup));
         boolean hasBtnWithText = hasBtnWithText(replyMarkup, BTN_RED_FLAG);
 
-        if(hasBtnWithText){
-            sendMessage(uniqueName, kernelComm,convert(chatWarsBot), BTN_RED_FLAG);
-            log(uniqueName,"2_sent '"+BTN_RED_FLAG+"'");
+        if (hasBtnWithText) {
+            sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), BTN_RED_FLAG, specificStorage);
+            log(uniqueName, "2_sent '" + BTN_RED_FLAG + "'");
         }
         messagesCW = waitResponse(specificStorage, chatWarsBot, uniqueName);
-        log(uniqueName,"4_msgCW -> " + toReadable(messagesCW));
+        log(uniqueName, "4_msgCW -> " + toReadable(messagesCW));
 
-        sendMessage(uniqueName, kernelComm,convert(chatWarsBot), BTN_TEXT_ATACK);
-        log(uniqueName,"5_sent '"+BTN_TEXT_ATACK+"'");
-        log(uniqueName," out goToMainMenuThanRedDefThanGoingAttack");
+        sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), BTN_TEXT_ATACK, specificStorage);
+        log(uniqueName, "5_sent '" + BTN_TEXT_ATACK + "'");
+        log(uniqueName, " out goToMainMenuThanRedDefThanGoingAttack");
 
     }
 
@@ -65,11 +66,11 @@ public class CwActionHelper {
 
     private static String toReadable(TLReplayKeyboardMarkup replyMarkup) {
         String result = "";
-        if(replyMarkup != null) {
+        if (replyMarkup != null) {
             for (TLKeyboardButtonRow row : replyMarkup.getRows()) {
                 result += "_row:";
                 for (TLAbsKeyboardButton btn : row.buttons) {
-                    result += (",btn-> " +btn.getText());
+                    result += (",btn-> " + btn.getText());
                 }
             }
         } else {
@@ -83,8 +84,8 @@ public class CwActionHelper {
         do {
             Thread.sleep(3000);
             chatWars = specificStorage.getChatWars();
-            log(uniqueName,"waitResponse#, msgs -> " + toReadable(chatWars));
-            log(uniqueName,"waitResponse#, condition -> " + (chatWars.isEmpty() || chatWars.get(0).getFromId() != chatWarsBot.getId()));
+            log(uniqueName, "waitResponse#, ChatWarsMsgs -> " + toReadable(chatWars));
+            log(uniqueName, "waitResponse#, condition -> " + (chatWars.isEmpty() || chatWars.get(0).getFromId() != chatWarsBot.getId()));
         } while (chatWars.isEmpty() || chatWars.get(0).getFromId() != chatWarsBot.getId());
         return chatWars;
     }
@@ -94,14 +95,14 @@ public class CwActionHelper {
         do {
             Thread.sleep(3000);
             cwCaptcha = specificStorage.getCwCaptchaBotChat();
-            log(uniqueName,"waitResponseCaptcha#, msgs -> " + toReadable(cwCaptcha));
-            log(uniqueName,"waitResponseCaptcha#, condition -> " + (cwCaptcha.isEmpty() || cwCaptcha.get(0).getFromId() != cwCaptchaBot.getId()));
+            log(uniqueName, "waitResponseCaptcha#, CaptchaBotMsgs -> " + toReadable(cwCaptcha));
+            log(uniqueName, "waitResponseCaptcha#, condition -> " + (cwCaptcha.isEmpty() || cwCaptcha.get(0).getFromId() != cwCaptchaBot.getId()));
         } while (cwCaptcha.isEmpty() || cwCaptcha.get(0).getFromId() != cwCaptchaBot.getId());
         return cwCaptcha;
     }
 
     public static boolean hasBtnWithText(TLReplayKeyboardMarkup replyMarkup, String text) {
-        if(replyMarkup != null) {
+        if (replyMarkup != null) {
             for (TLKeyboardButtonRow row : replyMarkup.getRows()) {
                 for (TLAbsKeyboardButton btn : row.buttons) {
                     if (btn.getText().equals(text)) {
@@ -114,29 +115,59 @@ public class CwActionHelper {
     }
 
     public static void sendFlagThanGoingAttack(String flag, IKernelComm kernelComm, TLUser chatWarsBot, SpecificStorage specificStorage, String uniqueName) throws Exception {
-        log(uniqueName,"sendFlagThanGoingAttack, flag -> " + flag);
-        sendMessage(uniqueName, kernelComm,convert(chatWarsBot), flag);
+        log(uniqueName, "sendFlagThanGoingAttack, flag -> " + flag);
+        sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), flag, specificStorage);
         log(uniqueName, "sendFlagThanGoingAttack#sent flag-> " + flag);
         waitResponse(specificStorage, chatWarsBot, uniqueName);
-        sendMessage(uniqueName, kernelComm,convert(chatWarsBot), BTN_TEXT_ATACK);
+        sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), BTN_TEXT_ATACK, specificStorage);
         log(uniqueName, "sendFlagThanGoingAttack#sent btn-> " + BTN_TEXT_ATACK);
     }
 
-    public static void sendMessage(String uniqueName, IKernelComm kernelComm, @NotNull IUser user, @NotNull String message) throws RpcException {
-        log(uniqueName,"sendMessage#send -> " + message);
-        kernelComm.sendMessage(user, message);
-        kernelComm.performMarkAsRead(user, 0);
+    public static void sendMessageChatWars(String uniqueName, IKernelComm kernelComm, @NotNull IUser chatWars, @NotNull String message, SpecificStorage specificStorage) throws RpcException {
+        log(uniqueName, "sendMessageChatWars#send -> " + message);
+        kernelComm.sendMessage(chatWars, message);
+        putMessageToStorageChatWars(kernelComm, message, specificStorage);
+        kernelComm.performMarkAsRead(chatWars, 0);
+    }
+
+    public static void sendMessageCaptchaBot(String uniqueName, IKernelComm kernelComm, @NotNull IUser captchaBot, @NotNull String message, SpecificStorage specificStorage) throws RpcException {
+        log(uniqueName, "sendMessageCaptchaBot#send -> " + message);
+        kernelComm.sendMessage(captchaBot, message);
+        putMessageToStorageCaptchaBot(kernelComm, message, specificStorage);
+        kernelComm.performMarkAsRead(captchaBot, 0);
+    }
+
+    private static void putMessageToStorageChatWars(IKernelComm kernelComm, @NotNull String message, SpecificStorage specificStorage) {
+        TLMessage msg = new TLMessage();
+        msg.setMessage(message);
+        msg.setFromId(kernelComm.getCurrentUserId());
+        TLPeerChat toId = new TLPeerChat();
+        toId.setId(CHAT_WARS_ID);
+        msg.setToId(toId);
+        specificStorage.putChatWars(msg);
+    }
+
+    private static void putMessageToStorageCaptchaBot(IKernelComm kernelComm, @NotNull String message, SpecificStorage specificStorage) {
+        TLMessage msg = new TLMessage();
+        msg.setMessage(message);
+        msg.setFromId(kernelComm.getCurrentUserId());
+        TLPeerChat toId = new TLPeerChat();
+        toId.setId(CW_CAPTCHA_BOT_ID);
+        msg.setToId(toId);
+        specificStorage.putCwCaptchaBotChat(msg);
     }
 
     public static TLUser findChatWarsUser(IKernelComm kernelComm, String uniqueName) {
-        log(uniqueName,"findChatWarsUser#started QuestHandler");
+        log(uniqueName, "findChatWarsUser#started QuestHandler");
         TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 100);
         TLDialogs tlDialogs = null;
-        try {
-            tlDialogs = kernelComm.getApi().doRpcCall(dialogsNew);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        do {
+            try {
+                tlDialogs = kernelComm.getApi().doRpcCall(dialogsNew);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } while (tlDialogs == null);
         return (tlDialogs.getUsers()).stream().filter((TLAbsUser c) -> ((TLUser) c).getUserName().equals("ChatWarsBot"))
                 .findFirst().map(c -> ((TLUser) c)).get();
     }

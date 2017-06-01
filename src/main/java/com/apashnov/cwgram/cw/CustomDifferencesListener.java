@@ -79,7 +79,7 @@ public class CustomDifferencesListener implements CwHandler {
                         CustomDifferencesListener.this.date = date;
 
                         if (CustomDifferencesListener.this.pts != pts || CustomDifferencesListener.this.seq != seq) {
-
+                            log(uniqueName, "CustomDifferencesListener#run going to get Diff ");
                             TLRequestUpdatesGetDifference diff = new TLRequestUpdatesGetDifference();
                             diff.setDate(CustomDifferencesListener.this.date);
                             diff.setPts(CustomDifferencesListener.this.pts);
@@ -108,6 +108,8 @@ public class CustomDifferencesListener implements CwHandler {
                                         .filter(tlAbsMessage -> tlAbsMessage instanceof TLMessage)
                                         .map((tlAbsMessage -> (TLMessage) tlAbsMessage))
                                         .forEachOrdered(CustomDifferencesListener.this::onMsg);
+                            } else {
+                                log(uniqueName, "CustomDifferencesListener#run not TLDifference = " + tlAbsDifference.getClass());
                             }
 
 //                            TLRequestUpdatesGetChannelDifference channelDiff = new TLRequestUpdatesGetChannelDifference();
@@ -123,7 +125,7 @@ public class CustomDifferencesListener implements CwHandler {
                         }
                         Thread.sleep(777);
                     } catch (Exception e) {
-                        log(uniqueName, "e = " + e);
+                        log(uniqueName, "CustomDifferencesListener#run e = " + e);
                         e.printStackTrace();
                         try {
                             Thread.sleep(200);
@@ -158,14 +160,15 @@ public class CustomDifferencesListener implements CwHandler {
                     log(uniqueName, "onMsg#, RED_ALERT_ID, to msg -> " + message.getMessage().replace("\n", ""));
                     specificStorage.putRedAlert(message);
                     break;
-                case CHAT_WARS_ID:
-                    specificStorage.putChatWars(message);
-                    log(uniqueName, "onMsg#, CHAT_WARS_ID, to msg -> " + message.getMessage().replace("\n", ""));
-                    break;
-                case CW_CAPTCHA_BOT_ID:
-                    specificStorage.putCwCaptchaBotChat(message);
-                    log(uniqueName, "onMsg#, CW_CAPTCHA_BOT_ID, to msg -> " + message.getMessage().replace("\n", ""));
-                    break;
+                    // now this messages are added on sending step
+//                case CHAT_WARS_ID:
+//                    specificStorage.putChatWars(message);
+//                    log(uniqueName, "onMsg#, CHAT_WARS_ID, to msg -> " + message.getMessage().replace("\n", ""));
+//                    break;
+//                case CW_CAPTCHA_BOT_ID:
+//                    specificStorage.putCwCaptchaBotChat(message);
+//                    log(uniqueName, "onMsg#, CW_CAPTCHA_BOT_ID, to msg -> " + message.getMessage().replace("\n", ""));
+//                    break;
             }
 //            final IUser user = databaseManager.getUserById(message.getFromId());
 //            if (user != null) {

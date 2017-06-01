@@ -74,6 +74,8 @@ public class CwGramConfig {
             if(caravanSecurity){
                 container.addHandler(applicationContext.getBean(CaravanSecurityHandler.class));
             }
+            container.addHandler(applicationContext.getBean(ArenaHandler.class));
+
 
         }
 

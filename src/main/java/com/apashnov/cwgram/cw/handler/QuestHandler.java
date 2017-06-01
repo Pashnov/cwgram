@@ -95,14 +95,16 @@ public class QuestHandler implements CwHandler {
 
     public void findChatsUser(IKernelComm kernelComm) {
         log(uniqueName, "findChatWarsUser#started QuestHandler");
-        TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 100);
+        TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 101);
         TLDialogs tlDialogs = null;
-        try {
-            tlDialogs = kernelComm.getApi().doRpcCall(dialogsNew);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log(uniqueName, "findChatWarsUser", e);
-        }
+        do {
+            try {
+                tlDialogs = kernelComm.getApi().doRpcCall(dialogsNew);
+            } catch (Exception e) {
+                e.printStackTrace();
+                log(uniqueName, "findChatWarsUser", e);
+            }
+        } while (tlDialogs == null);
         chatWarsBot = (tlDialogs.getUsers()).stream().filter((TLAbsUser c) -> ((TLUser) c).getUserName().equals("ChatWarsBot"))
                 .findFirst().map(c -> ((TLUser) c)).get();
         cwCaptchaBot = (tlDialogs.getUsers()).stream().filter((TLAbsUser c) -> ((TLUser) c).getUserName().equals("ChatWarsCaptchaBot"))
@@ -111,14 +113,14 @@ public class QuestHandler implements CwHandler {
     }
 
     private void clickSpecificQuest(IKernelComm kernelComm, String quest) throws RpcException, InterruptedException, ExecutionException {
-        sendMessage(uniqueName, kernelComm, convert(chatWarsBot), quest);
+        sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), quest, specificStorage);
         log(uniqueName, "clickSpecificQuest#clicked -> " + quest);
         List<TLMessage> tlMessages = waitResponse(specificStorage, chatWarsBot, uniqueName);
         String msg = tlMessages.get(0).getMessage();
         log(uniqueName, "clickSpecificQuest#msg = " + msg);
-        if (!(msg.contains("Ты отправился искать") || msg.contains("Слишком мало единиц выносливости"))) {
+        if (msg.contains("На выходе из замка охрана")) {
 
-            sendMessage(uniqueName, kernelComm, convert(cwCaptchaBot), msg);
+            sendMessageCaptchaBot(uniqueName, kernelComm, convert(cwCaptchaBot), msg, specificStorage);
 
             String buttonText;
             Thread.sleep(4500);
@@ -127,7 +129,7 @@ public class QuestHandler implements CwHandler {
 
 //            String buttonText = captchaSolver.solve(msg);
 //            if (buttonText != null) {
-            sendMessage(uniqueName, kernelComm, convert(chatWarsBot), buttonText);
+            sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), buttonText, specificStorage);
 //            } else {
 //                TLReplayKeyboardMarkup replyMarkup;
 //                do {
@@ -142,7 +144,7 @@ public class QuestHandler implements CwHandler {
     }
 
     private void clickQuest(IKernelComm kernelComm) throws RpcException, InterruptedException, ExecutionException {
-        sendMessage(uniqueName, kernelComm, convert(chatWarsBot), BTN_QUEST);
+        sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), BTN_QUEST, specificStorage);
         log(uniqueName, "clickQuest# clicked quest");
         waitResponse(specificStorage, chatWarsBot, uniqueName);
     }
