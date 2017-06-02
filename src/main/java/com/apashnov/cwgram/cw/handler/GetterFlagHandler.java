@@ -220,6 +220,7 @@ public class GetterFlagHandler implements CwHandler {
     public static boolean notRegimeNoise() {
         LocalTime now = LocalTime.now();
         int hour = now.getHour();
+        int minute = now.getMinute();
         switch (hour) {
             case 0:
             case 4:
@@ -227,7 +228,10 @@ public class GetterFlagHandler implements CwHandler {
             case 12:
             case 16:
             case 20:
-                return false;
+                if (minute >= 1) {
+                    return false;
+                }
+                return true;
         }
         return true;
     }

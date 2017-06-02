@@ -19,9 +19,10 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 import static com.apashnov.cwgram.cw.CustomLogger.log;
-import static com.apashnov.cwgram.cw.CwActionHelper.convert;
-import static com.apashnov.cwgram.cw.CwActionHelper.findChatWarsUser;
-import static com.apashnov.cwgram.cw.CwActionHelper.sendMessageChatWars;
+import static com.apashnov.cwgram.cw.CwActionHelper.*;
+import static com.apashnov.cwgram.cw.CwConstants.BTN_ARENA;
+import static com.apashnov.cwgram.cw.CwConstants.BTN_SEARCH_OPPONENT;
+import static com.apashnov.cwgram.cw.CwConstants.BTN_TEXT_CASTLE;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -61,12 +62,30 @@ public class ArenaHandler implements CwHandler {
 
                         while (!isReachedArenaLimit()) {
                             sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), "/report", specificStorage);
-                            List<TLMessage> chatWars = specificStorage.getChatWars();
-                            while (chatWars.isEmpty() || chatWars.get(0).getMessage().contains("Твои результаты в бою")){
-                                chatWars = specificStorage.getChatWars();
+                            List<TLMessage> chatWarsMsgs = waitResponse(specificStorage, chatWarsBot, uniqueName);
+//                            while (chatWarsMsgs.isEmpty() || chatWarsMsgs.get(0).getMessage().contains("Твои результаты в бою")){
+//                                chatWarsMsgs = specificStorage.getChatWars();
+//                            }
+                            String message = chatWarsMsgs.get(0).getMessage();
+                            //todo: check money
+
+                            sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), BTN_TEXT_CASTLE, specificStorage);
+                            waitResponse(specificStorage, chatWarsBot, uniqueName);
+
+                            sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), BTN_ARENA, specificStorage);
+                            chatWarsMsgs = waitResponse(specificStorage, chatWarsBot, uniqueName);
+                            message = chatWarsMsgs.get(0).getMessage();
+                            //todo: check limit
+
+                            sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), BTN_SEARCH_OPPONENT, specificStorage);
+                            chatWarsMsgs = waitResponse(specificStorage, chatWarsBot, uniqueName);
+                            message = chatWarsMsgs.get(0).getMessage();
+                            while (!message.contains("Соперник найден")){
+                                Thread.sleep(1000);
+                                message = specificStorage.getChatWars().get(0).getMessage();
                             }
 
-
+                            specificStorage.getChatWars().get(0)
 
                         }
                     } catch (Exception e) {

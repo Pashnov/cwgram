@@ -54,8 +54,8 @@ public class CwActionHelper {
         messagesCW = waitResponse(specificStorage, chatWarsBot, uniqueName);
         log(uniqueName, "4_msgCW -> " + toReadable(messagesCW));
 
-        sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), BTN_TEXT_ATACK, specificStorage);
-        log(uniqueName, "5_sent '" + BTN_TEXT_ATACK + "'");
+        sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), BIN_TEXT_ATTACK, specificStorage);
+        log(uniqueName, "5_sent '" + BIN_TEXT_ATTACK + "'");
         log(uniqueName, " out goToMainMenuThanRedDefThanGoingAttack");
 
     }
@@ -119,8 +119,8 @@ public class CwActionHelper {
         sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), flag, specificStorage);
         log(uniqueName, "sendFlagThanGoingAttack#sent flag-> " + flag);
         waitResponse(specificStorage, chatWarsBot, uniqueName);
-        sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), BTN_TEXT_ATACK, specificStorage);
-        log(uniqueName, "sendFlagThanGoingAttack#sent btn-> " + BTN_TEXT_ATACK);
+        sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), BIN_TEXT_ATTACK, specificStorage);
+        log(uniqueName, "sendFlagThanGoingAttack#sent btn-> " + BIN_TEXT_ATTACK);
     }
 
     public static void sendMessageChatWars(String uniqueName, IKernelComm kernelComm, @NotNull IUser chatWars, @NotNull String message, SpecificStorage specificStorage) throws RpcException {
