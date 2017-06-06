@@ -2,8 +2,8 @@ package com.apashnov.cwgram.cw.handler;
 
 import com.apashnov.cwgram.client.UpdatesStorage;
 import com.apashnov.cwgram.client.UpdatesStorage.SpecificStorage;
-import com.apashnov.cwgram.cw.FlagStorage;
 import com.apashnov.cwgram.cw.Notifier;
+import com.apashnov.cwgram.cw.UserChatStorage;
 import com.apashnov.cwgram.cw.Warrior;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -29,11 +29,7 @@ import static com.apashnov.cwgram.cw.CwConstants.BTN_TEXT_CASTLE;
 public class ArenaHandler implements CwHandler {
 
     @Autowired
-    private FlagStorage flagStorage;
-    @Autowired
     private UpdatesStorage updatesStorage;
-
-    private TLUser chatWarsBot;
 
     private Lock notifier;
     private Condition condition;
@@ -52,8 +48,18 @@ public class ArenaHandler implements CwHandler {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                log(uniqueName, "run#started ArenaHandler");
-                chatWarsBot = findChatWarsUser(kernelComm, uniqueName);
+                log(uniqueName, "ArenaHandler# starting");
+
+                TLUser chatWarsBot;
+                do {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {}
+                    chatWarsBot = UserChatStorage.getChatWarsBot(uniqueName);
+                } while (chatWarsBot == null);
+
+                log(uniqueName, "ArenaHandler# started");
+
 
                 while (true) {
                     try {
@@ -85,7 +91,7 @@ public class ArenaHandler implements CwHandler {
                                 message = specificStorage.getChatWars().get(0).getMessage();
                             }
 
-                            specificStorage.getChatWars().get(0)
+                            specificStorage.getChatWars().get(0);
 
                         }
                     } catch (Exception e) {

@@ -4,6 +4,8 @@ import com.apashnov.cwgram.client.UpdatesStorage.SpecificStorage;
 import com.apashnov.cwgram.client.model.User;
 import com.apashnov.cwgram.client.model.tl.TLRequestMessagesGetDialogsNew;
 import org.jetbrains.annotations.NotNull;
+import org.telegram.api.chat.TLAbsChat;
+import org.telegram.api.chat.channel.TLChannel;
 import org.telegram.api.engine.RpcException;
 import org.telegram.api.keyboard.TLKeyboardButtonRow;
 import org.telegram.api.keyboard.button.TLAbsKeyboardButton;
@@ -17,10 +19,12 @@ import org.telegram.bot.kernel.IKernelComm;
 import org.telegram.bot.structure.IUser;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.apashnov.cwgram.Constants.CHAT_WARS_ID;
 import static com.apashnov.cwgram.Constants.CW_CAPTCHA_BOT_ID;
+import static com.apashnov.cwgram.Constants.RED_ALERT_ID;
 import static com.apashnov.cwgram.cw.CustomLogger.log;
 import static com.apashnov.cwgram.cw.CwConstants.*;
 
@@ -157,9 +161,9 @@ public class CwActionHelper {
         specificStorage.putCwCaptchaBotChat(msg);
     }
 
-    public static TLUser findChatWarsUser(IKernelComm kernelComm, String uniqueName) {
-        log(uniqueName, "findChatWarsUser#started QuestHandler");
-        TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 100);
+
+    public static void findNecessaryChatsGroup(IKernelComm kernelComm, String uniqueName) {
+        TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 101);
         TLDialogs tlDialogs = null;
         do {
             try {
@@ -168,7 +172,26 @@ public class CwActionHelper {
                 e.printStackTrace();
             }
         } while (tlDialogs == null);
-        return (tlDialogs.getUsers()).stream().filter((TLAbsUser c) -> ((TLUser) c).getUserName().equals("ChatWarsBot"))
-                .findFirst().map(c -> ((TLUser) c)).get();
+        Optional<TLAbsChat> redAlertOpt = tlDialogs.getChats().stream().filter(c -> c.getId() == RED_ALERT_ID).findFirst();
+        if (redAlertOpt.isPresent()) {
+            UserChatStorage.setRedAlertGroup(uniqueName, (TLChannel) redAlertOpt.get());
+        } else {
+            log(uniqueName, "RedAlert Group not found");
+        }
+
+        Optional<TLAbsUser> chatWarsBotOpt = (tlDialogs.getUsers()).stream().filter((TLAbsUser c) -> ((TLUser) c).getUserName().equals("ChatWarsBot")).findFirst();
+        if (chatWarsBotOpt.isPresent()) {
+            UserChatStorage.setChatWarsBot(uniqueName, chatWarsBotOpt.map(c -> ((TLUser) c)).get());
+        } else {
+            throw new RuntimeException("ChatWars bot not found");
+        }
+
+        Optional<TLAbsUser> cwCaptchaBotOpt = (tlDialogs.getUsers()).stream().filter((TLAbsUser c) -> ((TLUser) c).getUserName().equals("ChatWarsCaptchaBot")).findFirst();
+        if (cwCaptchaBotOpt.isPresent()) {
+            UserChatStorage.setCaptchaBot(uniqueName, cwCaptchaBotOpt.map(c -> ((TLUser) c)).get());
+        } else {
+            throw new RuntimeException("ChatWarsCaptcha bot not found");
+        }
     }
+
 }

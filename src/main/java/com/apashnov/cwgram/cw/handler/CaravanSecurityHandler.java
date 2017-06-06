@@ -2,8 +2,8 @@ package com.apashnov.cwgram.cw.handler;
 
 import com.apashnov.cwgram.client.UpdatesStorage;
 import com.apashnov.cwgram.client.UpdatesStorage.SpecificStorage;
-import com.apashnov.cwgram.cw.CaptchaSolver;
 import com.apashnov.cwgram.cw.Notifier;
+import com.apashnov.cwgram.cw.UserChatStorage;
 import com.apashnov.cwgram.cw.Warrior;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -27,11 +27,6 @@ public class CaravanSecurityHandler implements CwHandler {
     @Autowired
     private UpdatesStorage updatesStorage;
 
-    @Autowired
-    private CaptchaSolver captchaSolver;
-
-    private TLUser chatWarsBot;
-
     private Lock notifier;
     private Condition condition;
     private String uniqueName;
@@ -47,25 +42,32 @@ public class CaravanSecurityHandler implements CwHandler {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                log(uniqueName, "CaravanSecurityHandler# starting");
 
-                chatWarsBot = findChatWarsUser(kernelComm, uniqueName);
+                TLUser chatWarsBot;
+                do {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {}
+                    chatWarsBot = UserChatStorage.getChatWarsBot(uniqueName);
+                } while (chatWarsBot == null);
+
+                log(uniqueName, "CaravanSecurityHandler# started");
+
 
                 while (true) {
                     try {
                         Thread.sleep(1 * 60 * 1000);
-                        log(uniqueName, "run# check caravan ");
+                        log(uniqueName, "CaravanSecurityHandler# check caravan ");
                         List<TLMessage> chatWars = specificStorage.getChatWars();
-                        log(uniqueName, "run#chatWars ->" + toReadable(chatWars));
-//                        for (TLMessage msgChatWars : chatWars) {
                         if(!chatWars.isEmpty()){
                             if (chatWars.get(0).getFromId() == chatWarsBot.getId()) {
                                 if (chatWars.get(0).getMessage().contains("/go")) {
                                     sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), "/go", specificStorage);
-                                    log(uniqueName, "run#sent '/go'");
+                                    log(uniqueName, "CaravanSecurityHandler#sent '/go'");
                                 }
                             }
                         }
-
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

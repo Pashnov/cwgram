@@ -1,14 +1,11 @@
 package com.apashnov.cwgram.cw.handler;
 
 import com.apashnov.cwgram.client.UpdatesStorage;
-import com.apashnov.cwgram.client.model.tl.TLRequestMessagesGetDialogsNew;
 import com.apashnov.cwgram.cw.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.telegram.api.messages.dialogs.TLDialogs;
-import org.telegram.api.user.TLAbsUser;
 import org.telegram.api.user.TLUser;
 import org.telegram.bot.kernel.IKernelComm;
 
@@ -16,9 +13,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 import static com.apashnov.cwgram.cw.CustomLogger.log;
-import static com.apashnov.cwgram.cw.CwActionHelper.findChatWarsUser;
-import static com.apashnov.cwgram.cw.CwActionHelper.goToMainMenuThanRedDefThanGoingAttack;
-import static com.apashnov.cwgram.cw.CwActionHelper.sendFlagThanGoingAttack;
+import static com.apashnov.cwgram.cw.CwActionHelper.*;
 import static com.apashnov.cwgram.cw.handler.GetterFlagHandler.notRegimeNoise;
 
 @Component
@@ -29,8 +24,6 @@ public class ReaderFlagHandler implements CwHandler {
     private FlagStorage flagStorage;
     @Autowired
     private UpdatesStorage updatesStorage;
-
-    private TLUser chatWarsBot;
 
     private Lock notifier;
     private Condition condition;
@@ -46,8 +39,10 @@ public class ReaderFlagHandler implements CwHandler {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                log(uniqueName, "run#started ReaderFlagHandler");
-                chatWarsBot = findChatWarsUser(kernelComm, uniqueName);
+                log(uniqueName, "ReaderFlagHandler# starting");
+                findNecessaryChatsGroup(kernelComm, uniqueName);
+                TLUser chatWarsBot = UserChatStorage.getChatWarsBot(uniqueName);
+                log(uniqueName, "ReaderFlagHandler# started");
 
                 while (true) {
                     try {

@@ -4,6 +4,7 @@ import com.apashnov.cwgram.client.UpdatesStorage;
 import com.apashnov.cwgram.client.UpdatesStorage.SpecificStorage;
 import com.apashnov.cwgram.client.model.tl.TLRequestMessagesGetDialogsNew;
 import com.apashnov.cwgram.cw.*;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -18,6 +19,7 @@ import org.telegram.bot.kernel.IKernelComm;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
@@ -34,10 +36,6 @@ public class GetterFlagHandler implements CwHandler {
     @Autowired
     private UpdatesStorage updatesStorage;
 
-    private long redAlertAccessHash;
-
-    private TLUser chatWarsBot;
-
     private Lock notifier;
     private Condition condition;
     private String uniqueName;
@@ -52,20 +50,12 @@ public class GetterFlagHandler implements CwHandler {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                log(uniqueName, "GetterFlagHandler# started ");
-                TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 99);
-                TLDialogs tlDialogs = null;
-                do {
-                    try {
-                        tlDialogs = kernelComm.getApi().doRpcCall(dialogsNew);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } while (tlDialogs == null);
-                TLAbsChat redAlertLegion = tlDialogs.getChats().stream().filter(c -> c.getId() == RED_ALERT_ID).findFirst().get();
-                redAlertAccessHash = ((TLChannel) redAlertLegion).getAccessHash();
-                chatWarsBot = (tlDialogs.getUsers()).stream().filter((TLAbsUser c) -> ((TLUser) c).getUserName().equals("ChatWarsBot"))
-                        .findFirst().map(c -> ((TLUser) c)).get();
+                log(uniqueName, "GetterFlagHandler# starting ");
+                findNecessaryChatsGroup(kernelComm, uniqueName);
+                TLUser chatWarsBot = UserChatStorage.getChatWarsBot(uniqueName);
+
+                log(uniqueName, "GetterFlagHandler# started");
+
 
                 while (true) {
                     try {
@@ -91,22 +81,14 @@ public class GetterFlagHandler implements CwHandler {
                                 log(uniqueName, "GetterFlagHandler# got def flag -> " + flag);
                             }
                             if (flag == null || flag == currentFlag) {
-                                try {
-                                    Thread.sleep(1500);
-                                    continue;
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
+                                Thread.sleep(1000);
+                                continue;
                             } else {
                                 currentFlag = flag;
                                 log(uniqueName, "GetterFlagHandler#going to send flag -> " + currentFlag);
                                 sendFlagThanGoingAttack(currentFlag, kernelComm, chatWarsBot, specificStorage, uniqueName);
-                                try {
-                                    Thread.sleep(2075);
-                                    continue;
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
+                                Thread.sleep(1000);
+                                continue;
                             }
                         }
                     } catch (Exception e) {
@@ -117,6 +99,7 @@ public class GetterFlagHandler implements CwHandler {
             }
         }).start();
     }
+
 
     private String atcFlag;
     private String defFlag;

@@ -2,9 +2,8 @@ package com.apashnov.cwgram.cw.handler;
 
 import com.apashnov.cwgram.client.UpdatesStorage;
 import com.apashnov.cwgram.client.UpdatesStorage.SpecificStorage;
-import com.apashnov.cwgram.client.model.tl.TLRequestMessagesGetDialogsNew;
-import com.apashnov.cwgram.cw.CaptchaSolver;
 import com.apashnov.cwgram.cw.Notifier;
+import com.apashnov.cwgram.cw.UserChatStorage;
 import com.apashnov.cwgram.cw.Warrior;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -12,8 +11,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.telegram.api.engine.RpcException;
 import org.telegram.api.message.TLMessage;
-import org.telegram.api.messages.dialogs.TLDialogs;
-import org.telegram.api.user.TLAbsUser;
 import org.telegram.api.user.TLUser;
 import org.telegram.bot.kernel.IKernelComm;
 
@@ -36,9 +33,6 @@ public class QuestHandler implements CwHandler {
 
     @Autowired
     private UpdatesStorage updatesStorage;
-
-    @Autowired
-    private CaptchaSolver captchaSolver;
 
     private TLUser chatWarsBot;
     private TLUser cwCaptchaBot;
@@ -67,8 +61,17 @@ public class QuestHandler implements CwHandler {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                log(uniqueName, "QuestHandler# starting");
+                do {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                    }
+                    chatWarsBot = UserChatStorage.getChatWarsBot(uniqueName);
+                    cwCaptchaBot = UserChatStorage.getCaptchaBot(uniqueName);
+                } while (chatWarsBot == null || cwCaptchaBot == null);
 
-                findChatsUser(kernelComm);
+                log(uniqueName, "QuestHandler# started");
 
                 while (true) {
                     try {
@@ -91,25 +94,6 @@ public class QuestHandler implements CwHandler {
 
 
         }).start();
-    }
-
-    public void findChatsUser(IKernelComm kernelComm) {
-        log(uniqueName, "findChatWarsUser#started QuestHandler");
-        TLRequestMessagesGetDialogsNew dialogsNew = new TLRequestMessagesGetDialogsNew(0, -1, 101);
-        TLDialogs tlDialogs = null;
-        do {
-            try {
-                tlDialogs = kernelComm.getApi().doRpcCall(dialogsNew);
-            } catch (Exception e) {
-                e.printStackTrace();
-                log(uniqueName, "findChatWarsUser", e);
-            }
-        } while (tlDialogs == null);
-        chatWarsBot = (tlDialogs.getUsers()).stream().filter((TLAbsUser c) -> ((TLUser) c).getUserName().equals("ChatWarsBot"))
-                .findFirst().map(c -> ((TLUser) c)).get();
-        cwCaptchaBot = (tlDialogs.getUsers()).stream().filter((TLAbsUser c) -> ((TLUser) c).getUserName().equals("ChatWarsCaptchaBot"))
-                .findFirst().map(c -> ((TLUser) c)).get();
-
     }
 
     private void clickSpecificQuest(IKernelComm kernelComm, String quest) throws RpcException, InterruptedException, ExecutionException {
