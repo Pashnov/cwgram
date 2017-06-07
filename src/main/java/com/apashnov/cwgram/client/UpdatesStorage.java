@@ -35,6 +35,7 @@ public class UpdatesStorage {
         private ConcurrentLinkedDeque<TLMessage> redAlertGroup = new ConcurrentLinkedDeque<>();
         private ConcurrentLinkedDeque<TLMessage> chatWarsChat = new ConcurrentLinkedDeque<>();
         private ConcurrentLinkedDeque<TLMessage> cwCaptchaBotChat = new ConcurrentLinkedDeque<>();
+        private ConcurrentLinkedDeque<TLMessage> commandGroup = new ConcurrentLinkedDeque<>();
 
         public void putRedAlert(TLMessage message) {
             put(message, redAlertGroup);
@@ -42,6 +43,14 @@ public class UpdatesStorage {
 
         public List<TLMessage> getRedAlert() {
             return new ArrayList<>(redAlertGroup);
+        }
+
+        public void putCommandGroup(TLMessage message) {
+            put(message, commandGroup);
+        }
+
+        public List<TLMessage> getCommandGroup() {
+            return new ArrayList<>(commandGroup);
         }
 
         public void putChatWars(TLMessage message) {

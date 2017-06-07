@@ -160,6 +160,10 @@ public class CustomDifferencesListener implements CwHandler {
                     log(uniqueName, "onMsg#, RED_ALERT_ID, to msg -> " + message.getMessage().replace("\n", ""));
                     specificStorage.putRedAlert(message);
                     break;
+                case COMMAND_GROUP_ID:
+                    log(uniqueName, "onMsg#, COMMAND_GROUP_ID, to msg -> " + message.getMessage().replace("\n", ""));
+                    specificStorage.putCommandGroup(message);
+                    break;
                     // now this messages are added on sending step
 //                case CHAT_WARS_ID:
 //                    specificStorage.putChatWars(message);

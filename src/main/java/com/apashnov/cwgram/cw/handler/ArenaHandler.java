@@ -64,7 +64,7 @@ public class ArenaHandler implements CwHandler {
                 while (true) {
                     try {
                         waitUntilWaked(notifier, condition);
-                        log(uniqueName, "ArenaHandler# waked to read flag");
+                        log(uniqueName, "ArenaHandler# waked ");
 
                         while (!isReachedArenaLimit()) {
                             sendMessageChatWars(uniqueName, kernelComm, convert(chatWarsBot), "/report", specificStorage);

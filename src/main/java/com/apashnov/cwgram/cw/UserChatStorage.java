@@ -11,6 +11,7 @@ public class UserChatStorage {
     private static Map<String, TLChannel> uniqueNameRedAlertGroup = new ConcurrentHashMap<>();
     private static Map<String, TLUser> uniqueNameChatWarsBot = new ConcurrentHashMap<>();
     private static Map<String, TLUser> uniqueNameCaptchaBot = new ConcurrentHashMap<>();
+    private static Map<String, TLChannel> uniqueNameCommandGroup = new ConcurrentHashMap<>();
 
     public static void setRedAlertGroup(String uniqueName, TLChannel redAlertGroup){
         uniqueNameRedAlertGroup.put(uniqueName, redAlertGroup);
@@ -24,16 +25,23 @@ public class UserChatStorage {
         uniqueNameCaptchaBot.put(uniqueName, captchaBot);
     }
 
+    public static void setCommandGroup(String uniqueName, TLChannel commandGroup){
+        uniqueNameCommandGroup.put(uniqueName, commandGroup);
+    }
+
     public static TLChannel getRedAlertGroup(String uniqueName){
         return uniqueNameRedAlertGroup.get(uniqueName);
     }
-
     public static TLUser getChatWarsBot(String uniqueName){
         return uniqueNameChatWarsBot.get(uniqueName);
     }
 
     public static TLUser getCaptchaBot(String uniqueName){
         return uniqueNameCaptchaBot.get(uniqueName);
+    }
+
+    public static TLChannel getCommandGroup(String uniqueName){
+        return uniqueNameCommandGroup.get(uniqueName);
     }
 
 }
